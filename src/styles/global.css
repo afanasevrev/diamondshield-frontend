@@ -1,0 +1,61 @@
+@import './reset.css';
+@import './theme.css';
+@import './layout.css';
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(55, 183, 255, 0.16), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(42, 102, 162, 0.16), transparent 28%),
+    var(--ds-bg);
+  color: var(--ds-text);
+  font-family: var(--ds-font);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ds-crystal-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.ds-crystal-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(60deg, rgba(55, 183, 255, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ds-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ds-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.ds-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ds-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+  .ds-grid-2,
+  .ds-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
