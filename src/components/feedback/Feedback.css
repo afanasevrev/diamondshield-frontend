@@ -1,0 +1,40 @@
+.ds-feedback {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ds-text-muted);
+}
+
+.ds-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(55, 183, 255, 0.18);
+  border-top-color: var(--ds-primary);
+  border-radius: 50%;
+  animation: ds-spin 0.8s linear infinite;
+}
+
+@keyframes ds-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ds-error-message {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 93, 108, 0.26);
+  background: rgba(255, 93, 108, 0.1);
+  color: var(--ds-danger);
+}
+
+.ds-empty-state {
+  padding: 28px;
+  text-align: center;
+  color: var(--ds-text-muted);
+}
+
+.ds-empty-state h3 {
+  margin: 0 0 8px;
+  color: var(--ds-text);
+}

@@ -1,0 +1,31 @@
+.ds-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ds-table th {
+  text-align: left;
+  color: var(--ds-text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  padding: 12px;
+  border-bottom: 1px solid var(--ds-border);
+}
+
+.ds-table td {
+  padding: 13px 12px;
+  border-bottom: 1px solid rgba(137, 202, 255, 0.08);
+  color: var(--ds-text-soft);
+}
+
+.ds-table tr:hover td {
+  background: rgba(55, 183, 255, 0.04);
+}

@@ -1,0 +1,36 @@
+.ds-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ds-field-label {
+  color: var(--ds-text-soft);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ds-input {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--ds-border-strong);
+  background: rgba(2, 10, 20, 0.45);
+  color: var(--ds-text);
+  padding: 0 12px;
+  outline: none;
+}
+
+.ds-input:focus {
+  border-color: rgba(55, 183, 255, 0.75);
+  box-shadow: 0 0 0 3px rgba(55, 183, 255, 0.12);
+}
+
+.ds-input::placeholder {
+  color: rgba(184, 212, 232, 0.45);
+}
+
+.ds-field-error {
+  color: var(--ds-danger);
+  font-size: 12px;
+}
