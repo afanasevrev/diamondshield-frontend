@@ -1,0 +1,47 @@
+.ds-login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.ds-login-panel {
+  width: min(440px, 100%);
+  position: relative;
+  z-index: 1;
+}
+
+.ds-login-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.ds-login-logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--ds-primary), #134a78);
+  color: #04101d;
+  font-weight: 900;
+  box-shadow: var(--ds-shadow-glow);
+}
+
+.ds-login-brand h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.ds-login-brand p {
+  margin: 5px 0 0;
+  color: var(--ds-text-muted);
+}
+
+.ds-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
