@@ -5,11 +5,20 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { apiClient } from '../../shared/api/apiClient';
+
+interface LoginResponse {
+  token?: string;
+  accessToken?: string;
+  jwt?: string;
+  username?: string;
+}
 
 interface AuthContextValue {
   isAuthenticated: boolean;
   username: string | null;
-  login: (username: string, password: string) => void;
+  token: string | null;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -31,14 +40,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.getItem(USERNAME_KEY),
   );
 
-  function login(nextUsername: string, _password: string) {
-    const fakeToken = `dev-token-${Date.now()}`;
+  async function login(nextUsername: string, password: string) {
+    const response = await apiClient.post<LoginResponse>(
+      '/api/auth/login',
+      {
+        username: nextUsername,
+        password,
+      },
+      {
+        target: 'central',
+        auth: false,
+      },
+    );
 
-    localStorage.setItem(TOKEN_KEY, fakeToken);
-    localStorage.setItem(USERNAME_KEY, nextUsername);
+    const nextToken = response.token || response.accessToken || response.jwt;
 
-    setToken(fakeToken);
-    setUsername(nextUsername);
+    if (!nextToken) {
+      throw new Error('Центральный сервер не вернул JWT token');
+    }
+
+    localStorage.setItem(TOKEN_KEY, nextToken);
+    localStorage.setItem(USERNAME_KEY, response.username || nextUsername);
+
+    setToken(nextToken);
+    setUsername(response.username || nextUsername);
   }
 
   function logout() {
@@ -53,6 +78,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     () => ({
       isAuthenticated: Boolean(token),
       username,
+      token,
       login,
       logout,
     }),
