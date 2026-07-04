@@ -7,15 +7,15 @@ interface NavItem {
 
 const centralItems: NavItem[] = [
   { label: 'Панель мониторинга', to: '/central/dashboard' },
+  { label: 'Организации', to: '/central/organizations' },
   { label: 'Объекты', to: '/central/objects' },
-  { label: 'Локальные серверы', to: '/central/local-servers' },
+  { label: 'Точки прохода', to: '/central/access-points' },
   { label: 'Физические лица', to: '/central/persons' },
   { label: 'Идентификаторы', to: '/central/identifiers' },
-  { label: 'Оборудование', to: '/central/equipment' },
+  { label: 'Расписания', to: '/central/schedules' },
+  { label: 'Правила доступа', to: '/central/access-rules' },
+  { label: 'Проверка доступа', to: '/central/access-check' },
   { label: 'Журнал событий', to: '/central/access-events' },
-  { label: 'Тревоги', to: '/central/alarms' },
-  { label: 'Импорт XLSX', to: '/central/imports' },
-  { label: 'Гостевой модуль', to: '/central/guests' },
 ];
 
 const localItems: NavItem[] = [
