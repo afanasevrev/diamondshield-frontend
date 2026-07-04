@@ -34,3 +34,10 @@
   color: var(--ds-danger);
   font-size: 12px;
 }
+
+.ds-textarea {
+  min-height: 90px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  resize: vertical;
+}
