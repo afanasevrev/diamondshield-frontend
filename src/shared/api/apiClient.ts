@@ -29,11 +29,15 @@ async function request<T>(
 
   const headers = new Headers(options.headers);
 
-  if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
+  const isFormData = options.body instanceof FormData;
+
+  if (!headers.has('Content-Type') && !isFormData && options.body !== undefined) {
     headers.set('Content-Type', 'application/json');
   }
 
-  headers.set('Accept', 'application/json');
+  if (!headers.has('Accept')) {
+    headers.set('Accept', 'application/json');
+  }
 
   if (options.auth !== false) {
     const token = getToken();
@@ -71,10 +75,30 @@ async function request<T>(
       message = payload.message;
     }
 
+    if (response.status === 401) {
+      message = '401 Unauthorized. Выполни вход заново или проверь JWT.';
+    }
+
+    if (response.status === 403) {
+      message = '403 Forbidden. У пользователя нет нужного права.';
+    }
+
     throw new HttpError(response.status, message, payload);
   }
 
   return payload as T;
+}
+
+function buildBody(body: unknown): BodyInit | undefined {
+  if (body === undefined || body === null) {
+    return undefined;
+  }
+
+  if (body instanceof FormData) {
+    return body;
+  }
+
+  return JSON.stringify(body);
 }
 
 export const apiClient = {
@@ -93,7 +117,7 @@ export const apiClient = {
     return request<T>(path, {
       ...options,
       method: 'POST',
-      body: body instanceof FormData ? body : JSON.stringify(body ?? {}),
+      body: buildBody(body),
     });
   },
 
@@ -105,7 +129,7 @@ export const apiClient = {
     return request<T>(path, {
       ...options,
       method: 'PUT',
-      body: body instanceof FormData ? body : JSON.stringify(body ?? {}),
+      body: buildBody(body),
     });
   },
 
