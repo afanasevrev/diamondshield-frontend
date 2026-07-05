@@ -10,19 +10,23 @@ import { PageHeader } from '../../../components/page/PageHeader';
 import { DataTable } from '../../../components/table/DataTable';
 import {
   type AccessPoint,
+  type Controller,
   createAccessPoint,
   type DsObject,
   getAccessPoints,
+  getControllers,
   getObjects,
 } from '../api/centralApi';
 
 export function AccessPointsPage() {
   const [items, setItems] = useState<AccessPoint[]>([]);
   const [objects, setObjects] = useState<DsObject[]>([]);
+  const [controllers, setControllers] = useState<Controller[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [objectId, setObjectId] = useState('');
+  const [controllerId, setControllerId] = useState('');
   const [name, setName] = useState('Главный вход');
   const [accessPointType, setAccessPointType] = useState('door');
 
@@ -31,13 +35,22 @@ export function AccessPointsPage() {
       setLoading(true);
       setError(null);
 
-      const [objs, points] = await Promise.all([getObjects(), getAccessPoints()]);
+      const [objs, points, nextControllers] = await Promise.all([
+        getObjects(),
+        getAccessPoints(),
+        getControllers(),
+      ]);
 
       setObjects(objs);
       setItems(points);
+      setControllers(nextControllers);
 
       if (!objectId && objs.length > 0) {
         setObjectId(objs[0].id);
+      }
+
+      if (!controllerId && nextControllers.length > 0) {
+        setControllerId(nextControllers[0].id);
       }
     } catch (ex) {
       setError(ex instanceof Error ? ex.message : 'Ошибка загрузки точек прохода');
@@ -52,12 +65,18 @@ export function AccessPointsPage() {
     try {
       setError(null);
 
-      await createAccessPoint({
+      const payload: any = {
         objectId,
         name,
         accessPointType,
         active: true,
-      });
+      };
+
+      if (controllerId) {
+        payload.controllerId = controllerId;
+      }
+
+      await createAccessPoint(payload);
 
       await load();
     } catch (ex) {
@@ -69,12 +88,20 @@ export function AccessPointsPage() {
     load();
   }, []);
 
+  const filteredControllers = controllers.filter(
+    (controller) => !objectId || controller.objectId === objectId,
+  );
+
   return (
     <div className="ds-page">
       <PageHeader
         title="Точки прохода"
         description="Двери, турникеты, шлагбаумы и другие точки доступа"
-        actions={<Button variant="secondary" onClick={load}>Обновить</Button>}
+        actions={
+          <Button variant="secondary" onClick={load}>
+            Обновить
+          </Button>
+        }
       />
 
       {error && <ErrorMessage message={error} />}
@@ -84,11 +111,27 @@ export function AccessPointsPage() {
           <Select
             label="Объект"
             value={objectId}
-            onChange={(e) => setObjectId(e.target.value)}
+            onChange={(e) => {
+              setObjectId(e.target.value);
+              setControllerId('');
+            }}
             options={objects.map((item) => ({
               label: item.name,
               value: item.id,
             }))}
+          />
+
+          <Select
+            label="Контроллер"
+            value={controllerId}
+            onChange={(e) => setControllerId(e.target.value)}
+            options={[
+              { label: 'Без контроллера', value: '' },
+              ...filteredControllers.map((item) => ({
+                label: `${item.name} ${item.model ? `(${item.model})` : ''}`,
+                value: item.id,
+              })),
+            ]}
           />
 
           <Select
@@ -102,7 +145,11 @@ export function AccessPointsPage() {
             ]}
           />
 
-          <Input label="Название" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input
+            label="Название"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
 
           <div style={{ alignSelf: 'end' }}>
             <Button type="submit" disabled={!objectId}>
@@ -136,6 +183,11 @@ export function AccessPointsPage() {
                 key: 'objectId',
                 title: 'Объект',
                 render: (item) => item.objectId || '—',
+              },
+              {
+                key: 'controllerId',
+                title: 'Контроллер',
+                render: (item) => item.controllerId || '—',
               },
             ]}
           />

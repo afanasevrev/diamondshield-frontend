@@ -295,3 +295,97 @@ export async function getAccessEvents(unknown?: boolean): Promise<AccessEvent[]>
   const response = await apiClient.get<unknown>(`/api/access-events${query}`);
   return normalizeArray<AccessEvent>(response);
 }
+
+export interface LocalServer {
+  id: string;
+  objectId?: string;
+  name: string;
+  ipAddress?: string | null;
+  macAddress?: string | null;
+  softwareVersion?: string | null;
+  status?: string | null;
+  lastSeenAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateLocalServerRequest {
+  objectId: string;
+  name: string;
+  ipAddress?: string;
+  macAddress?: string;
+  softwareVersion?: string;
+  serverToken?: string;
+}
+
+export interface Controller {
+  id: string;
+  objectId?: string;
+  localServerId?: string | null;
+  name: string;
+  model?: string | null;
+  serialNumber?: string | null;
+  ipAddress?: string | null;
+  port?: number | null;
+  status?: string | null;
+  lastSeenAt?: string | null;
+}
+
+export interface CreateControllerRequest {
+  objectId: string;
+  localServerId?: string;
+  name: string;
+  model: string;
+  serialNumber?: string;
+  ipAddress?: string;
+  port?: number;
+}
+
+export interface Reader {
+  id: string;
+  controllerId?: string;
+  accessPointId?: string | null;
+  name: string;
+  readerType?: string;
+  direction?: string;
+  status?: string;
+  percoExdevNumber?: number | null;
+  percoDirection?: number | null;
+}
+
+export interface CreateReaderRequest {
+  controllerId: string;
+  accessPointId?: string;
+  name: string;
+  readerType: string;
+  direction: string;
+  percoExdevNumber?: number;
+  percoDirection?: number;
+}
+
+export async function getLocalServers(): Promise<LocalServer[]> {
+  const response = await apiClient.get<unknown>('/api/local-servers');
+  return normalizeArray<LocalServer>(response);
+}
+
+export function createLocalServer(request: CreateLocalServerRequest) {
+  return apiClient.post<LocalServer>('/api/local-servers', request);
+}
+
+export async function getControllers(): Promise<Controller[]> {
+  const response = await apiClient.get<unknown>('/api/controllers');
+  return normalizeArray<Controller>(response);
+}
+
+export function createController(request: CreateControllerRequest) {
+  return apiClient.post<Controller>('/api/controllers', request);
+}
+
+export async function getReaders(): Promise<Reader[]> {
+  const response = await apiClient.get<unknown>('/api/readers');
+  return normalizeArray<Reader>(response);
+}
+
+export function createReader(request: CreateReaderRequest) {
+  return apiClient.post<Reader>('/api/readers', request);
+}
