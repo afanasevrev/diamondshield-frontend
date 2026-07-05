@@ -9,6 +9,9 @@ const centralItems: NavItem[] = [
   { label: 'Панель мониторинга', to: '/central/dashboard' },
   { label: 'Организации', to: '/central/organizations' },
   { label: 'Объекты', to: '/central/objects' },
+  { label: 'Локальные серверы', to: '/central/local-servers' },
+  { label: 'Контроллеры', to: '/central/controllers' },
+  { label: 'Считыватели', to: '/central/readers' },
   { label: 'Точки прохода', to: '/central/access-points' },
   { label: 'Физические лица', to: '/central/persons' },
   { label: 'Идентификаторы', to: '/central/identifiers' },
@@ -20,12 +23,12 @@ const centralItems: NavItem[] = [
 
 const localItems: NavItem[] = [
   { label: 'АРМ оператора', to: '/local/operator' },
+  { label: 'PERCo C01', to: '/local/perco' },
   { label: 'Журнал проходов', to: '/local/access-events' },
   { label: 'Фоторяд', to: '/local/photo-line' },
   { label: 'Тревоги', to: '/local/alarms' },
   { label: 'Точки доступа', to: '/local/access-points' },
   { label: 'Контроллеры', to: '/local/controllers' },
-  { label: 'PERCo C01', to: '/local/perco' },
   { label: 'Диагностика', to: '/local/diagnostics' },
   { label: 'Синхронизация', to: '/local/sync' },
 ];
