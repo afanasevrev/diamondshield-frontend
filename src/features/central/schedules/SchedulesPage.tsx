@@ -16,7 +16,7 @@ import {
   type Schedule,
 } from '../api/centralApi';
 
-function build247Intervals() {
+function buildSafeTestIntervals() {
   return [1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => ({
     dayOfWeek,
     startTime: '09:00:00',
@@ -31,8 +31,10 @@ export function SchedulesPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [organizationId, setOrganizationId] = useState('');
-  const [name, setName] = useState('Круглосуточно');
-  const [description, setDescription] = useState('Тестовое расписание 24/7');
+  const [name, setName] = useState('Тестовое ежедневное');
+  const [description, setDescription] = useState(
+    'Тестовое расписание. Используется безопасный интервал 09:00-23:59 из-за временного сдвига времени на backend.',
+  );
 
   async function load() {
     try {
@@ -67,7 +69,7 @@ export function SchedulesPage() {
         organizationId,
         name,
         description,
-        intervals: build247Intervals(),
+        intervals: buildSafeTestIntervals(),
       });
 
       await load();
@@ -85,12 +87,19 @@ export function SchedulesPage() {
       <PageHeader
         title="Расписания"
         description="Временные интервалы доступа"
-        actions={<Button variant="secondary" onClick={load}>Обновить</Button>}
+        actions={
+          <Button variant="secondary" onClick={load}>
+            Обновить
+          </Button>
+        }
       />
 
       {error && <ErrorMessage message={error} />}
 
-      <Card title="Создать расписание 24/7">
+      <Card
+        title="Создать тестовое ежедневное расписание"
+        subtitle="Временное frontend-исправление: 09:00:00 - 23:59:59 вместо 00:00:00 - 23:59:59"
+      >
         <form className="ds-grid ds-grid-2" onSubmit={handleSubmit}>
           <Select
             label="Организация"
@@ -102,7 +111,11 @@ export function SchedulesPage() {
             }))}
           />
 
-          <Input label="Название" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input
+            label="Название"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
 
           <TextArea
             label="Описание"
@@ -112,7 +125,7 @@ export function SchedulesPage() {
 
           <div style={{ alignSelf: 'end' }}>
             <Button type="submit" disabled={!organizationId}>
-              Создать 24/7
+              Создать расписание
             </Button>
           </div>
         </form>
