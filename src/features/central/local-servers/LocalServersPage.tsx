@@ -28,7 +28,7 @@ export function LocalServersPage() {
   const [ipAddress, setIpAddress] = useState('192.168.1.10');
   const [macAddress, setMacAddress] = useState('');
   const [softwareVersion, setSoftwareVersion] = useState('1.0.0');
-  const [serverToken, setServerToken] = useState('local-server-token-123');
+  const [serverTokenHash, setServerToken] = useState('local-server-token-123');
 
   async function load() {
     try {
@@ -65,7 +65,7 @@ export function LocalServersPage() {
         ipAddress,
         macAddress,
         softwareVersion,
-        serverToken,
+        serverTokenHash,
       });
 
       await load();
@@ -130,7 +130,7 @@ export function LocalServersPage() {
 
           <Input
             label="Токен локального сервера"
-            value={serverToken}
+            value={serverTokenHash}
             onChange={(e) => setServerToken(e.target.value)}
           />
 

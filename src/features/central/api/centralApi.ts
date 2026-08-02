@@ -315,7 +315,7 @@ export interface CreateLocalServerRequest {
   ipAddress?: string;
   macAddress?: string;
   softwareVersion?: string;
-  serverToken?: string;
+  serverTokenHash?: string;
 }
 
 export interface Controller {
