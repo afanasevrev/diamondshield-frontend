@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { Badge } from '../../../components/badges/Badge';
 import { Button } from '../../../components/buttons/Button';
 import { Card } from '../../../components/cards/Card';
@@ -7,7 +7,7 @@ import { Input } from '../../../components/forms/Input';
 import { PageHeader } from '../../../components/page/PageHeader';
 import {
   getLocalSyncConfig,
-  LocalSyncConfigResponse,
+  type LocalSyncConfigResponse,
 } from '../api/centralMonitoringApi';
 
 function count(value?: unknown[]) {
@@ -24,7 +24,7 @@ export function LocalSyncConfigPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
 
     try {
