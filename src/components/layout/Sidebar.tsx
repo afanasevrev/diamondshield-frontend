@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 interface NavItem {
@@ -17,7 +18,10 @@ const centralItems: NavItem[] = [
   { label: 'Считыватели', to: '/central/readers' },
   { label: 'Точки прохода', to: '/central/access-points' },
   { label: 'Физические лица', to: '/central/persons' },
+  { label: 'Карточка лица', to: '/central/person-card' },
   { label: 'Идентификаторы', to: '/central/identifiers' },
+  { label: 'Привязка карты', to: '/central/card-binding' },
+  { label: 'Импорт XLSX', to: '/central/imports' },
   { label: 'Расписания', to: '/central/schedules' },
   { label: 'Правила доступа', to: '/central/access-rules' },
   { label: 'Проверка доступа', to: '/central/access-check' },
@@ -38,10 +42,12 @@ const localItems: NavItem[] = [
   { label: 'Контроллеры', to: '/local/controllers' },
   { label: 'PERCo C01', to: '/local/perco' },
   { label: 'Диагностика', to: '/local/diagnostics' },
-  { label: 'Синхронизация', to: '/local/sync' },
 ];
 
 export function Sidebar() {
+  const [centralOpen, setCentralOpen] = useState(true);
+  const [localOpen, setLocalOpen] = useState(true);
+
   return (
     <aside className="ds-sidebar">
       <div className="ds-sidebar-logo">
@@ -53,29 +59,52 @@ export function Sidebar() {
         </div>
       </div>
 
-      <div className="ds-sidebar-section">
-        <div className="ds-sidebar-section-title">Центральный сервер</div>
+      <SidebarSection
+        title="Центральный сервер"
+        open={centralOpen}
+        onToggle={() => setCentralOpen((value) => !value)}
+        items={centralItems}
+      />
 
-        <nav className="ds-sidebar-nav">
-          {centralItems.map((item) => (
-            <NavLink key={item.to} to={item.to} className="ds-sidebar-link">
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
-
-      <div className="ds-sidebar-section">
-        <div className="ds-sidebar-section-title">Локальный сервер</div>
-
-        <nav className="ds-sidebar-nav">
-          {localItems.map((item) => (
-            <NavLink key={item.to} to={item.to} className="ds-sidebar-link">
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
+      <SidebarSection
+        title="Локальный сервер"
+        open={localOpen}
+        onToggle={() => setLocalOpen((value) => !value)}
+        items={localItems}
+      />
     </aside>
+  );
+}
+
+function SidebarSection({
+  title,
+  open,
+  onToggle,
+  items,
+}: {
+  title: string;
+  open: boolean;
+  onToggle: () => void;
+  items: NavItem[];
+}) {
+  return (
+    <div className="ds-sidebar-section">
+      <button
+        type="button"
+        className="ds-sidebar-section-button"
+        onClick={onToggle}
+      >
+        <span>{title}</span>
+        <span className="ds-sidebar-section-arrow">{open ? '▲' : '▼'}</span>
+      </button>
+
+      <nav className={open ? 'ds-sidebar-nav' : 'ds-sidebar-nav-collapsed'}>
+        {items.map((item) => (
+          <NavLink key={item.to} to={item.to} className="ds-sidebar-link">
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
+    </div>
   );
 }
