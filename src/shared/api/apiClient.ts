@@ -64,27 +64,52 @@ async function request<T>(
   }
 
   if (!response.ok) {
-    let message = `HTTP ${response.status}`;
+  let message = `HTTP ${response.status}`;
 
-    if (
-      payload &&
-      typeof payload === 'object' &&
-      'message' in payload &&
-      typeof payload.message === 'string'
-    ) {
-      message = payload.message;
+  if (payload && typeof payload === 'object') {
+    const objectPayload = payload as Record<string, unknown>;
+
+    const backendMessage =
+      objectPayload.message ||
+      objectPayload.error ||
+      objectPayload.detail ||
+      objectPayload.title;
+
+    if (typeof backendMessage === 'string' && backendMessage.trim()) {
+      message = backendMessage;
     }
-
-    if (response.status === 401) {
-      message = '401 Unauthorized. Выполни вход заново или проверь JWT.';
-    }
-
-    if (response.status === 403) {
-      message = '403 Forbidden. У пользователя нет нужного права.';
-    }
-
-    throw new HttpError(response.status, message, payload);
   }
+
+  if (typeof payload === 'string' && payload.trim()) {
+    message = payload;
+  }
+
+  if (response.status === 400) {
+    message = `400 Bad Request. ${message}`;
+  }
+
+  if (response.status === 401) {
+    message = '401 Unauthorized. Выполни вход заново или проверь JWT.';
+  }
+
+  if (response.status === 403) {
+    message = '403 Forbidden. У пользователя нет нужного права.';
+  }
+
+  if (response.status === 404) {
+    message = `404 Not Found. Endpoint не найден: ${path}`;
+  }
+
+  if (response.status === 409) {
+    message = `409 Conflict. ${message}`;
+  }
+
+  if (response.status >= 500) {
+    message = `500 Server Error. ${message}. Проверь логи backend.`;
+  }
+
+  throw new HttpError(response.status, message, payload);
+}
 
   return payload as T;
 }
