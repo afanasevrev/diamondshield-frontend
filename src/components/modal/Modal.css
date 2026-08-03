@@ -1,0 +1,52 @@
+.ds-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(2, 10, 20, 0.72);
+  backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.ds-modal {
+  width: min(720px, 100%);
+  max-height: min(760px, calc(100vh - 48px));
+  overflow: hidden;
+  background: var(--ds-bg-card);
+  border: 1px solid var(--ds-border-strong);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-modal-header {
+  padding: 18px 18px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ds-modal-header h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.ds-modal-header p {
+  margin: 6px 0 0;
+  color: var(--ds-text-muted);
+  font-size: 13px;
+}
+
+.ds-modal-body {
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.ds-modal-footer {
+  padding: 0 18px 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
