@@ -10,6 +10,9 @@ const centralItems: NavItem[] = [
   { label: 'Организации', to: '/central/organizations' },
   { label: 'Объекты', to: '/central/objects' },
   { label: 'Локальные серверы', to: '/central/local-servers' },
+  { label: 'Диагностика offline', to: '/central/offline-diagnostics' },
+  { label: 'Heartbeat debug', to: '/central/heartbeat-debug' },
+  { label: 'Local-sync config', to: '/central/local-sync-config' },
   { label: 'Контроллеры', to: '/central/controllers' },
   { label: 'Считыватели', to: '/central/readers' },
   { label: 'Точки прохода', to: '/central/access-points' },
@@ -19,6 +22,9 @@ const centralItems: NavItem[] = [
   { label: 'Правила доступа', to: '/central/access-rules' },
   { label: 'Проверка доступа', to: '/central/access-check' },
   { label: 'Журнал событий', to: '/central/access-events' },
+  { label: 'Центральные тревоги', to: '/central/alarms' },
+  { label: 'История синхронизации', to: '/central/sync-history' },
+  { label: 'Аудит', to: '/central/audit' },
 ];
 
 const localItems: NavItem[] = [

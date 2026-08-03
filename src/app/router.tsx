@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
 import { CentralLoginPage } from '../features/auth/CentralLoginPage';
+
 import { CentralDashboardPage } from '../features/central/dashboard/CentralDashboardPage';
 import { OrganizationsPage } from '../features/central/organizations/OrganizationsPage';
 import { ObjectsPage } from '../features/central/objects/ObjectsPage';
@@ -14,9 +15,25 @@ import { SchedulesPage } from '../features/central/schedules/SchedulesPage';
 import { AccessRulesPage } from '../features/central/access-rules/AccessRulesPage';
 import { AccessCheckPage } from '../features/central/access-check/AccessCheckPage';
 import { AccessEventsPage } from '../features/central/access-events/AccessEventsPage';
+
+import { CentralAlarmsPage } from '../features/central/alarms/CentralAlarmsPage';
+import { CentralAuditPage } from '../features/central/audit/CentralAuditPage';
+import { SyncHistoryPage } from '../features/central/sync-history/SyncHistoryPage';
+import { LocalSyncConfigPage } from '../features/central/local-sync-config/LocalSyncConfigPage';
+import { HeartbeatDebugPage } from '../features/central/heartbeat-debug/HeartbeatDebugPage';
+import { OfflineDiagnosticsPage } from '../features/central/offline-diagnostics/OfflineDiagnosticsPage';
+
 import { LocalDiagnosticsPage } from '../features/local/diagnostics/LocalDiagnosticsPage';
 import { LocalOperatorDashboardPage } from '../features/local/operator/LocalOperatorDashboardPage';
 import { LocalPercoPage } from '../features/local/perco/LocalPercoPage';
+import { LocalAccessEventsPage } from '../features/local/access-events/LocalAccessEventsPage';
+import { LocalAlarmsPage } from '../features/local/alarms/LocalAlarmsPage';
+import { LocalPhotoLinePage } from '../features/local/photo-line/LocalPhotoLinePage';
+import { LocalDeviceStatusPage } from '../features/local/device-status/LocalDeviceStatusPage';
+import { LocalAccessPointsPage } from '../features/local/access-points/LocalAccessPointsPage';
+import { LocalControllersPage } from '../features/local/controllers/LocalControllersPage';
+import { LocalManualControlPage } from '../features/local/manual-control/LocalManualControlPage';
+
 import { NotFoundPage } from '../features/NotFoundPage';
 
 export const router = createBrowserRouter([
@@ -50,6 +67,18 @@ export const router = createBrowserRouter([
       {
         path: '/central/local-servers',
         element: <LocalServersPage />,
+      },
+      {
+        path: '/central/offline-diagnostics',
+        element: <OfflineDiagnosticsPage />,
+      },
+      {
+        path: '/central/heartbeat-debug',
+        element: <HeartbeatDebugPage />,
+      },
+      {
+        path: '/central/local-sync-config',
+        element: <LocalSyncConfigPage />,
       },
       {
         path: '/central/controllers',
@@ -88,8 +117,49 @@ export const router = createBrowserRouter([
         element: <AccessEventsPage />,
       },
       {
+        path: '/central/alarms',
+        element: <CentralAlarmsPage />,
+      },
+      {
+        path: '/central/sync-history',
+        element: <SyncHistoryPage />,
+      },
+      {
+        path: '/central/audit',
+        element: <CentralAuditPage />,
+      },
+
+      {
         path: '/local/operator',
         element: <LocalOperatorDashboardPage />,
+      },
+      {
+        path: '/local/photo-line',
+        element: <LocalPhotoLinePage />,
+      },
+      {
+        path: '/local/access-events',
+        element: <LocalAccessEventsPage />,
+      },
+      {
+        path: '/local/alarms',
+        element: <LocalAlarmsPage />,
+      },
+      {
+        path: '/local/device-status',
+        element: <LocalDeviceStatusPage />,
+      },
+      {
+        path: '/local/manual-control',
+        element: <LocalManualControlPage />,
+      },
+      {
+        path: '/local/access-points',
+        element: <LocalAccessPointsPage />,
+      },
+      {
+        path: '/local/controllers',
+        element: <LocalControllersPage />,
       },
       {
         path: '/local/perco',
