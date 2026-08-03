@@ -92,7 +92,8 @@ export function LocalServersPage() {
 
       {error && <ErrorMessage message={error} />}
 
-      <Card title="Создать локальный сервер">
+      <Card title="Создать локальный сервер"
+        subtitle="serverToken должен быть захэширован центральным backend в server_token_hash" >
         <form className="ds-grid ds-grid-3" onSubmit={handleSubmit}>
           <Select
             label="Объект"
