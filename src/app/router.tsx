@@ -23,6 +23,10 @@ import { LocalSyncConfigPage } from '../features/central/local-sync-config/Local
 import { HeartbeatDebugPage } from '../features/central/heartbeat-debug/HeartbeatDebugPage';
 import { OfflineDiagnosticsPage } from '../features/central/offline-diagnostics/OfflineDiagnosticsPage';
 
+import { PersonsImportPage } from '../features/central/imports/PersonsImportPage';
+import { PersonCardPage } from '../features/central/person-card/PersonCardPage';
+import { CardBindingPage } from '../features/central/card-binding/CardBindingPage';
+
 import { LocalDiagnosticsPage } from '../features/local/diagnostics/LocalDiagnosticsPage';
 import { LocalOperatorDashboardPage } from '../features/local/operator/LocalOperatorDashboardPage';
 import { LocalPercoPage } from '../features/local/perco/LocalPercoPage';
@@ -97,8 +101,20 @@ export const router = createBrowserRouter([
         element: <PersonsPage />,
       },
       {
+        path: '/central/person-card',
+        element: <PersonCardPage />,
+      },
+      {
         path: '/central/identifiers',
         element: <IdentifiersPage />,
+      },
+      {
+        path: '/central/card-binding',
+        element: <CardBindingPage />,
+      },
+      {
+        path: '/central/imports',
+        element: <PersonsImportPage />,
       },
       {
         path: '/central/schedules',
