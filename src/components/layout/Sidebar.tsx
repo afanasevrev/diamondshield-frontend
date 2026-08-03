@@ -29,12 +29,14 @@ const centralItems: NavItem[] = [
 
 const localItems: NavItem[] = [
   { label: 'АРМ оператора', to: '/local/operator' },
-  { label: 'PERCo C01', to: '/local/perco' },
-  { label: 'Журнал проходов', to: '/local/access-events' },
   { label: 'Фоторяд', to: '/local/photo-line' },
+  { label: 'Журнал проходов', to: '/local/access-events' },
   { label: 'Тревоги', to: '/local/alarms' },
+  { label: 'Состояние оборудования', to: '/local/device-status' },
+  { label: 'Ручное управление', to: '/local/manual-control' },
   { label: 'Точки доступа', to: '/local/access-points' },
   { label: 'Контроллеры', to: '/local/controllers' },
+  { label: 'PERCo C01', to: '/local/perco' },
   { label: 'Диагностика', to: '/local/diagnostics' },
   { label: 'Синхронизация', to: '/local/sync' },
 ];
