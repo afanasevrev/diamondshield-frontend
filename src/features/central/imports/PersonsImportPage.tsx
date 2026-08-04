@@ -1,5 +1,6 @@
 import { type SubmitEvent, useEffect, useState } from 'react';
 import { Badge } from '../../../components/badges/Badge';
+import { HttpError } from '../../../shared/api/httpError';
 import { Button } from '../../../components/buttons/Button';
 import { Card } from '../../../components/cards/Card';
 import { ErrorMessage } from '../../../components/feedback/ErrorMessage';
@@ -50,6 +51,7 @@ export function PersonsImportPage() {
   const [uploading, setUploading] = useState(false);
   const [errorsLoading, setErrorsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rawError, setRawError] = useState('');
 
   async function loadHistory() {
     try {
@@ -82,8 +84,15 @@ export function PersonsImportPage() {
       setResult(response);
 
       await loadHistory();
+
     } catch (ex) {
+    if (ex instanceof HttpError) {
+      setError(ex.message);
+      setRawError(JSON.stringify(ex.payload, null, 2));
+    } else {
       setError(ex instanceof Error ? ex.message : 'Ошибка загрузки XLSX');
+      setRawError('');
+    }
     } finally {
       setUploading(false);
     }
@@ -121,6 +130,23 @@ export function PersonsImportPage() {
       />
 
       {error && <ErrorMessage message={error} />}
+      {rawError && (
+      <Card title="Raw backend error">
+        <pre
+          style={{
+          overflow: 'auto',
+          maxHeight: 360,
+          padding: 16,
+          borderRadius: 12,
+          border: '1px solid var(--ds-border)',
+          background: 'rgba(2, 10, 20, 0.45)',
+          color: 'var(--ds-text-soft)',
+        }}
+        >
+        {rawError}
+        </pre>
+      </Card>
+      )}
 
       <Card
         title="Загрузить XLSX"
