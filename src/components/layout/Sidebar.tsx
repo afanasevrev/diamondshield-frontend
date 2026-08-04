@@ -22,6 +22,9 @@ const centralItems: NavItem[] = [
   { label: 'Идентификаторы', to: '/central/identifiers' },
   { label: 'Привязка карты', to: '/central/card-binding' },
   { label: 'Импорт XLSX', to: '/central/imports' },
+  { label: 'Гостевые заявки', to: '/central/guest-requests' },
+  { label: 'Реестр гостей', to: '/central/guests' },
+  { label: 'Нежелательные гости', to: '/central/guest-blacklist' },
   { label: 'Расписания', to: '/central/schedules' },
   { label: 'Правила доступа', to: '/central/access-rules' },
   { label: 'Проверка доступа', to: '/central/access-check' },
@@ -32,6 +35,7 @@ const centralItems: NavItem[] = [
 ];
 
 const localItems: NavItem[] = [
+  { label: 'Гостевой пост', to: '/local/guest-desk' },
   { label: 'АРМ оператора', to: '/local/operator' },
   { label: 'Фоторяд', to: '/local/photo-line' },
   { label: 'Журнал проходов', to: '/local/access-events' },

@@ -27,6 +27,12 @@ import { PersonsImportPage } from '../features/central/imports/PersonsImportPage
 import { PersonCardPage } from '../features/central/person-card/PersonCardPage';
 import { CardBindingPage } from '../features/central/card-binding/CardBindingPage';
 
+import { PublicGuestRequestPage } from '../features/guests/public/PublicGuestRequestPage';
+import { GuestRequestsPage } from '../features/guests/central/GuestRequestsPage';
+import { GuestsRegistryPage } from '../features/guests/central/GuestsRegistryPage';
+import { GuestBlacklistPage } from '../features/guests/central/GuestBlacklistPage';
+import { LocalGuestDeskPage } from '../features/guests/local/LocalGuestDeskPage';
+
 import { LocalDiagnosticsPage } from '../features/local/diagnostics/LocalDiagnosticsPage';
 import { LocalOperatorDashboardPage } from '../features/local/operator/LocalOperatorDashboardPage';
 import { LocalPercoPage } from '../features/local/perco/LocalPercoPage';
@@ -52,6 +58,10 @@ export const router = createBrowserRouter([
   {
     path: '/central/login',
     element: <CentralLoginPage />,
+  },
+  {
+    path: '/public/guest-request',
+    element: <PublicGuestRequestPage />,
   },
   {
     element: <AppShell />,
@@ -117,6 +127,18 @@ export const router = createBrowserRouter([
         element: <PersonsImportPage />,
       },
       {
+        path: '/central/guest-requests',
+        element: <GuestRequestsPage />,
+      },
+      {
+        path: '/central/guests',
+        element: <GuestsRegistryPage />,
+      },
+      {
+        path: '/central/guest-blacklist',
+        element: <GuestBlacklistPage />,
+      },
+      {
         path: '/central/schedules',
         element: <SchedulesPage />,
       },
@@ -148,6 +170,10 @@ export const router = createBrowserRouter([
       {
         path: '/local/operator',
         element: <LocalOperatorDashboardPage />,
+      },
+      {
+        path: '/local/guest-desk',
+        element: <LocalGuestDeskPage />,
       },
       {
         path: '/local/photo-line',
