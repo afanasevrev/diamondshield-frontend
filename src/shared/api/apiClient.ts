@@ -90,6 +90,7 @@ async function request<T>(
 
   if (response.status === 401) {
     message = '401 Unauthorized. Выполни вход заново или проверь JWT.';
+    window.dispatchEvent(new CustomEvent('diamondshield:unauthorized'));
   }
 
   if (response.status === 403) {
