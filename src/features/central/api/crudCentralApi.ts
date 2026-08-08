@@ -1,5 +1,6 @@
 import { apiClient } from '../../../shared/api/apiClient';
 import {
+  type AccessIdentifier,
   type AccessPoint,
   type AccessRule,
   type Controller,
@@ -9,7 +10,6 @@ import {
   type Person,
   type Reader,
   type Schedule,
-  type AccessIdentifier,
 } from './centralApi';
 
 export function updateOrganization(id: string, request: Partial<Organization>) {
