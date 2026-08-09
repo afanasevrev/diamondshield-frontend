@@ -1,229 +1,127 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
 import { StatusDot } from '../../../components/badges/StatusDot';
-import { Button } from '../../../components/buttons/Button';
-import { Card } from '../../../components/cards/Card';
-import { ErrorMessage } from '../../../components/feedback/ErrorMessage';
-import { Loading } from '../../../components/feedback/Loading';
 import { Input } from '../../../components/forms/Input';
 import { Select } from '../../../components/forms/Select';
-import { PageHeader } from '../../../components/page/PageHeader';
-import { DataTable } from '../../../components/table/DataTable';
-import {
-  type AccessPoint,
-  type Controller,
-  createReader,
-  getAccessPoints,
-  getControllers,
-  getReaders,
-  type Reader,
-} from '../api/centralApi';
+import { EntityCrudPage } from '../../../components/crud/EntityCrudPage';
+import { createReader, getReaders, type Reader } from '../api/centralApi';
+import { deleteReader, updateReader } from '../api/crudCentralApi';
+
+interface ReaderForm {
+  controllerId: string;
+  accessPointId?: string;
+  name: string;
+  readerType: string;
+  direction: string;
+  percoExdevNumber?: number;
+  percoDirection?: number;
+}
 
 export function ReadersPage() {
-  const [items, setItems] = useState<Reader[]>([]);
-  const [controllers, setControllers] = useState<Controller[]>([]);
-  const [accessPoints, setAccessPoints] = useState<AccessPoint[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [controllerId, setControllerId] = useState('');
-  const [accessPointId, setAccessPointId] = useState('');
-  const [name, setName] = useState('Считыватель вход');
-  const [readerType, setReaderType] = useState('RFID');
-  const [direction, setDirection] = useState('in');
-  const [percoExdevNumber, setPercoExdevNumber] = useState('0');
-  const [percoDirection, setPercoDirection] = useState('0');
-
-  async function load() {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const [nextControllers, nextAccessPoints, nextReaders] = await Promise.all([
-        getControllers(),
-        getAccessPoints(),
-        getReaders(),
-      ]);
-
-      setControllers(nextControllers);
-      setAccessPoints(nextAccessPoints);
-      setItems(nextReaders);
-
-      if (!controllerId && nextControllers.length > 0) {
-        setControllerId(nextControllers[0].id);
-      }
-
-      if (!accessPointId && nextAccessPoints.length > 0) {
-        setAccessPointId(nextAccessPoints[0].id);
-      }
-    } catch (ex) {
-      setError(ex instanceof Error ? ex.message : 'Ошибка загрузки считывателей');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleSubmit(event: SubmitEvent) {
-    event.preventDefault();
-
-    try {
-      setError(null);
-
-      await createReader({
-        controllerId,
-        accessPointId,
-        name,
-        readerType,
-        direction,
-        percoExdevNumber: Number(percoExdevNumber),
-        percoDirection: Number(percoDirection),
-      });
-
-      await load();
-    } catch (ex) {
-      setError(ex instanceof Error ? ex.message : 'Ошибка создания считывателя');
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, []);
-
   return (
-    <div className="ds-page">
-      <PageHeader
-        title="Считыватели"
-        description="Считыватели карт, QR и связка с PERCo number/direction"
-        actions={
-          <Button variant="secondary" onClick={load}>
-            Обновить
-          </Button>
-        }
-      />
-
-      {error && <ErrorMessage message={error} />}
-
-      <Card title="Создать считыватель">
-        <form className="ds-grid ds-grid-3" onSubmit={handleSubmit}>
-          <Select
-            label="Контроллер"
-            value={controllerId}
-            onChange={(e) => setControllerId(e.target.value)}
-            options={controllers.map((item) => ({
-              label: `${item.name} ${item.model ? `(${item.model})` : ''}`,
-              value: item.id,
-            }))}
-          />
-
-          <Select
-            label="Точка прохода"
-            value={accessPointId}
-            onChange={(e) => setAccessPointId(e.target.value)}
-            options={[
-              { label: 'Не выбрана', value: '' },
-              ...accessPoints.map((item) => ({
-                label: item.name,
-                value: item.id,
-              })),
-            ]}
-          />
-
-          <Input
-            label="Название"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+    <EntityCrudPage<Reader, ReaderForm, ReaderForm>
+      title="Считыватели"
+      description="Считыватели и PERCo mapping"
+      createTitle="Создать считыватель"
+      listTitle="Список считывателей"
+      editTitle="Редактировать считыватель"
+      deleteTitle="Удалить считыватель?"
+      loadItems={getReaders}
+      createItem={createReader}
+      updateItem={updateReader}
+      deleteItem={deleteReader}
+      initialCreateState={{
+        controllerId: '',
+        accessPointId: '',
+        name: 'Считыватель вход',
+        readerType: 'RFID',
+        direction: 'in',
+        percoExdevNumber: 0,
+        percoDirection: 0,
+      }}
+      createForm={(value, setValue) => (
+        <>
+          <Input label="controllerId" value={value.controllerId} onChange={(e) => setValue({ ...value, controllerId: e.target.value })} />
+          <Input label="accessPointId" value={value.accessPointId || ''} onChange={(e) => setValue({ ...value, accessPointId: e.target.value })} />
+          <Input label="Название" value={value.name} onChange={(e) => setValue({ ...value, name: e.target.value })} />
 
           <Select
             label="Тип"
-            value={readerType}
-            onChange={(e) => setReaderType(e.target.value)}
+            value={value.readerType}
+            onChange={(e) => setValue({ ...value, readerType: e.target.value })}
             options={[
               { label: 'RFID', value: 'RFID' },
               { label: 'QR', value: 'QR' },
               { label: 'Wiegand', value: 'Wiegand' },
-              { label: 'Barcode', value: 'Barcode' },
             ]}
           />
 
           <Select
             label="Направление"
-            value={direction}
-            onChange={(e) => setDirection(e.target.value)}
+            value={value.direction}
+            onChange={(e) => setValue({ ...value, direction: e.target.value })}
             options={[
               { label: 'Вход', value: 'in' },
               { label: 'Выход', value: 'out' },
             ]}
           />
 
-          <Input
-            label="PERCo ИУ number"
-            type="number"
-            value={percoExdevNumber}
-            onChange={(e) => setPercoExdevNumber(e.target.value)}
-          />
+          <Input label="PERCo number" type="number" value={String(value.percoExdevNumber ?? 0)} onChange={(e) => setValue({ ...value, percoExdevNumber: Number(e.target.value) })} />
+          <Input label="PERCo direction" type="number" value={String(value.percoDirection ?? 0)} onChange={(e) => setValue({ ...value, percoDirection: Number(e.target.value) })} />
+        </>
+      )}
+      toUpdateState={(item) => ({
+        controllerId: item.controllerId || '',
+        accessPointId: item.accessPointId || '',
+        name: item.name,
+        readerType: item.readerType || 'RFID',
+        direction: item.direction || 'in',
+        percoExdevNumber: item.percoExdevNumber ?? 0,
+        percoDirection: item.percoDirection ?? 0,
+      })}
+      editForm={(value, setValue) => (
+        <>
+          <Input label="controllerId" value={value.controllerId} onChange={(e) => setValue({ ...value, controllerId: e.target.value })} />
+          <Input label="accessPointId" value={value.accessPointId || ''} onChange={(e) => setValue({ ...value, accessPointId: e.target.value })} />
+          <Input label="Название" value={value.name} onChange={(e) => setValue({ ...value, name: e.target.value })} />
 
-          <Input
-            label="PERCo direction"
-            type="number"
-            value={percoDirection}
-            onChange={(e) => setPercoDirection(e.target.value)}
-          />
-
-          <div style={{ alignSelf: 'end' }}>
-            <Button type="submit" disabled={!controllerId}>
-              Создать
-            </Button>
-          </div>
-        </form>
-      </Card>
-
-      <Card title="Список считывателей">
-        {loading ? (
-          <Loading />
-        ) : (
-          <DataTable
-            data={items}
-            getRowKey={(item) => item.id}
-            columns={[
-              { key: 'id', title: 'ID', render: (item) => item.id },
-              { key: 'name', title: 'Название', render: (item) => item.name },
-              {
-                key: 'controller',
-                title: 'Контроллер',
-                render: (item) => item.controllerId || '—',
-              },
-              {
-                key: 'point',
-                title: 'Точка прохода',
-                render: (item) => item.accessPointId || '—',
-              },
-              {
-                key: 'type',
-                title: 'Тип',
-                render: (item) => item.readerType || '—',
-              },
-              {
-                key: 'direction',
-                title: 'Направление',
-                render: (item) => item.direction || '—',
-              },
-              {
-                key: 'perco',
-                title: 'PERCo mapping',
-                render: (item) =>
-                  `number=${item.percoExdevNumber ?? '—'}, direction=${
-                    item.percoDirection ?? '—'
-                  }`,
-              },
-              {
-                key: 'status',
-                title: 'Статус',
-                render: (item) => <StatusDot status={item.status || 'unknown'} />,
-              },
+          <Select
+            label="Тип"
+            value={value.readerType}
+            onChange={(e) => setValue({ ...value, readerType: e.target.value })}
+            options={[
+              { label: 'RFID', value: 'RFID' },
+              { label: 'QR', value: 'QR' },
+              { label: 'Wiegand', value: 'Wiegand' },
             ]}
           />
-        )}
-      </Card>
-    </div>
+
+          <Select
+            label="Направление"
+            value={value.direction}
+            onChange={(e) => setValue({ ...value, direction: e.target.value })}
+            options={[
+              { label: 'Вход', value: 'in' },
+              { label: 'Выход', value: 'out' },
+            ]}
+          />
+
+          <Input label="PERCo number" type="number" value={String(value.percoExdevNumber ?? 0)} onChange={(e) => setValue({ ...value, percoExdevNumber: Number(e.target.value) })} />
+          <Input label="PERCo direction" type="number" value={String(value.percoDirection ?? 0)} onChange={(e) => setValue({ ...value, percoDirection: Number(e.target.value) })} />
+        </>
+      )}
+      columns={[
+        { key: 'id', title: 'ID', render: (item) => item.id },
+        { key: 'name', title: 'Название', render: (item) => item.name },
+        { key: 'controller', title: 'Контроллер', render: (item) => item.controllerId || '—' },
+        { key: 'point', title: 'Точка', render: (item) => item.accessPointId || '—' },
+        { key: 'type', title: 'Тип', render: (item) => item.readerType || '—' },
+        { key: 'direction', title: 'Направление', render: (item) => item.direction || '—' },
+        {
+          key: 'status',
+          title: 'Статус',
+          render: (item) => <StatusDot status={item.status || 'unknown'} />,
+        },
+      ]}
+      getDeleteLabel={(item) => item.name}
+    />
   );
 }
