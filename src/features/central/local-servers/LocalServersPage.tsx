@@ -1,187 +1,145 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
 import { StatusDot } from '../../../components/badges/StatusDot';
-import { Button } from '../../../components/buttons/Button';
-import { Card } from '../../../components/cards/Card';
-import { ErrorMessage } from '../../../components/feedback/ErrorMessage';
-import { Loading } from '../../../components/feedback/Loading';
 import { Input } from '../../../components/forms/Input';
-import { Select } from '../../../components/forms/Select';
-import { PageHeader } from '../../../components/page/PageHeader';
-import { DataTable } from '../../../components/table/DataTable';
-import { formatDateTime } from '../../../shared/utils/formatDate';
+import { EntityCrudPage } from '../../../components/crud/EntityCrudPage';
 import {
   createLocalServer,
-  type DsObject,
   getLocalServers,
-  getObjects,
   type LocalServer,
 } from '../api/centralApi';
+import {
+  deleteLocalServer,
+  updateLocalServer,
+} from '../api/crudCentralApi';
+
+interface LocalServerForm {
+  objectId: string;
+  name: string;
+  ipAddress?: string;
+  macAddress?: string;
+  softwareVersion?: string;
+  serverToken?: string;
+}
 
 export function LocalServersPage() {
-  const [items, setItems] = useState<LocalServer[]>([]);
-  const [objects, setObjects] = useState<DsObject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [objectId, setObjectId] = useState('');
-  const [name, setName] = useState('Локальный сервер объекта');
-  const [ipAddress, setIpAddress] = useState('192.168.1.10');
-  const [macAddress, setMacAddress] = useState('');
-  const [softwareVersion, setSoftwareVersion] = useState('1.0.0');
-  const [serverTokenHash, setServerToken] = useState('local-server-token-123');
-
-  async function load() {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const [nextObjects, nextItems] = await Promise.all([
-        getObjects(),
-        getLocalServers(),
-      ]);
-
-      setObjects(nextObjects);
-      setItems(nextItems);
-
-      if (!objectId && nextObjects.length > 0) {
-        setObjectId(nextObjects[0].id);
-      }
-    } catch (ex) {
-      setError(ex instanceof Error ? ex.message : 'Ошибка загрузки локальных серверов');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleSubmit(event: SubmitEvent) {
-    event.preventDefault();
-
-    try {
-      setError(null);
-
-      await createLocalServer({
-        objectId,
-        name,
-        ipAddress,
-        macAddress,
-        softwareVersion,
-        serverTokenHash,
-      });
-
-      await load();
-    } catch (ex) {
-      setError(ex instanceof Error ? ex.message : 'Ошибка создания локального сервера');
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, []);
-
   return (
-    <div className="ds-page">
-      <PageHeader
-        title="Локальные серверы"
-        description="Локальные серверы объектов и их состояние"
-        actions={
-          <Button variant="secondary" onClick={load}>
-            Обновить
-          </Button>
-        }
-      />
-
-      {error && <ErrorMessage message={error} />}
-
-      <Card title="Создать локальный сервер"
-        subtitle="serverToken должен быть захэширован центральным backend в server_token_hash" >
-        <form className="ds-grid ds-grid-3" onSubmit={handleSubmit}>
-          <Select
-            label="Объект"
-            value={objectId}
-            onChange={(e) => setObjectId(e.target.value)}
-            options={objects.map((item) => ({
-              label: item.name,
-              value: item.id,
-            }))}
+    <EntityCrudPage<LocalServer, LocalServerForm, LocalServerForm>
+      title="Локальные серверы"
+      description="Локальные серверы объектов, heartbeat и online/offline"
+      createTitle="Создать локальный сервер"
+      listTitle="Список локальных серверов"
+      editTitle="Редактировать локальный сервер"
+      deleteTitle="Удалить локальный сервер?"
+      deleteDescription="Удаление может быть запрещено, если сервер связан с контроллерами."
+      loadItems={getLocalServers}
+      createItem={createLocalServer}
+      updateItem={updateLocalServer}
+      deleteItem={deleteLocalServer}
+      initialCreateState={{
+        objectId: '',
+        name: 'Локальный сервер объекта',
+        ipAddress: '127.0.0.1',
+        macAddress: '',
+        softwareVersion: '1.0.0',
+        serverToken: 'local-server-token-123',
+      }}
+      createForm={(value, setValue) => (
+        <>
+          <Input
+            label="objectId"
+            value={value.objectId || ''}
+            onChange={(e) => setValue({ ...value, objectId: e.target.value })}
           />
 
           <Input
             label="Название"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={value.name}
+            onChange={(e) => setValue({ ...value, name: e.target.value })}
           />
 
           <Input
-            label="IP-адрес"
-            value={ipAddress}
-            onChange={(e) => setIpAddress(e.target.value)}
+            label="IP"
+            value={value.ipAddress || ''}
+            onChange={(e) => setValue({ ...value, ipAddress: e.target.value })}
           />
 
           <Input
-            label="MAC-адрес"
-            value={macAddress}
-            onChange={(e) => setMacAddress(e.target.value)}
+            label="MAC"
+            value={value.macAddress || ''}
+            onChange={(e) => setValue({ ...value, macAddress: e.target.value })}
           />
 
           <Input
             label="Версия ПО"
-            value={softwareVersion}
-            onChange={(e) => setSoftwareVersion(e.target.value)}
+            value={value.softwareVersion || ''}
+            onChange={(e) =>
+              setValue({ ...value, softwareVersion: e.target.value })
+            }
           />
 
           <Input
-            label="Токен локального сервера"
-            value={serverTokenHash}
-            onChange={(e) => setServerToken(e.target.value)}
+            label="serverToken"
+            value={value.serverToken || ''}
+            onChange={(e) =>
+              setValue({ ...value, serverToken: e.target.value })
+            }
+          />
+        </>
+      )}
+      toUpdateState={(item) => ({
+        objectId: item.objectId || '',
+        name: item.name,
+        ipAddress: item.ipAddress || '',
+        macAddress: item.macAddress || '',
+        softwareVersion: item.softwareVersion || '',
+      })}
+      editForm={(value, setValue) => (
+        <>
+          <Input
+            label="objectId"
+            value={value.objectId || ''}
+            onChange={(e) => setValue({ ...value, objectId: e.target.value })}
           />
 
-          <div style={{ alignSelf: 'end' }}>
-            <Button type="submit" disabled={!objectId}>
-              Создать
-            </Button>
-          </div>
-        </form>
-      </Card>
-
-      <Card title="Список локальных серверов">
-        {loading ? (
-          <Loading />
-        ) : (
-          <DataTable
-            data={items}
-            getRowKey={(item) => item.id}
-            columns={[
-              { key: 'id', title: 'ID', render: (item) => item.id },
-              { key: 'name', title: 'Название', render: (item) => item.name },
-              {
-                key: 'status',
-                title: 'Статус',
-                render: (item) => <StatusDot status={item.status || 'offline'} />,
-              },
-              {
-                key: 'object',
-                title: 'Объект',
-                render: (item) => item.objectId || '—',
-              },
-              {
-                key: 'ip',
-                title: 'IP',
-                render: (item) => item.ipAddress || '—',
-              },
-              {
-                key: 'version',
-                title: 'Версия',
-                render: (item) => item.softwareVersion || '—',
-              },
-              {
-                key: 'lastSeen',
-                title: 'Последняя связь',
-                render: (item) => formatDateTime(item.lastSeenAt),
-              },
-            ]}
+          <Input
+            label="Название"
+            value={value.name}
+            onChange={(e) => setValue({ ...value, name: e.target.value })}
           />
-        )}
-      </Card>
-    </div>
+
+          <Input
+            label="IP"
+            value={value.ipAddress || ''}
+            onChange={(e) => setValue({ ...value, ipAddress: e.target.value })}
+          />
+
+          <Input
+            label="MAC"
+            value={value.macAddress || ''}
+            onChange={(e) => setValue({ ...value, macAddress: e.target.value })}
+          />
+
+          <Input
+            label="Версия ПО"
+            value={value.softwareVersion || ''}
+            onChange={(e) =>
+              setValue({ ...value, softwareVersion: e.target.value })
+            }
+          />
+        </>
+      )}
+      columns={[
+        { key: 'id', title: 'ID', render: (item) => item.id },
+        { key: 'name', title: 'Название', render: (item) => item.name },
+        {
+          key: 'status',
+          title: 'Статус',
+          render: (item) => <StatusDot status={item.status || 'offline'} />,
+        },
+        { key: 'object', title: 'Object', render: (item) => item.objectId || '—' },
+        { key: 'ip', title: 'IP', render: (item) => item.ipAddress || '—' },
+        { key: 'version', title: 'Версия', render: (item) => item.softwareVersion || '—' },
+      ]}
+      getDeleteLabel={(item) => item.name}
+    />
   );
 }

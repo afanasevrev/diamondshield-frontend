@@ -26,6 +26,7 @@ export interface DsObject {
   description?: string | null;
   active?: boolean;
   isActive?: boolean;
+  timezone?: string;
 }
 
 export interface CreateObjectRequest {

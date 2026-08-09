@@ -6,7 +6,7 @@ import { createObject, type DsObject, getObjects } from '../api/centralApi';
 import { deleteObject, updateObject } from '../api/crudCentralApi';
 
 interface ObjectForm {
-  organizationId?: string;
+  organizationId: string;
   name: string;
   address?: string;
   timezone?: string;
