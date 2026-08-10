@@ -1,196 +1,79 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
 import { Badge } from '../../../components/badges/Badge';
-import { Button } from '../../../components/buttons/Button';
-import { Card } from '../../../components/cards/Card';
-import { ErrorMessage } from '../../../components/feedback/ErrorMessage';
-import { Loading } from '../../../components/feedback/Loading';
 import { Input } from '../../../components/forms/Input';
-import { Select } from '../../../components/forms/Select';
-import { PageHeader } from '../../../components/page/PageHeader';
-import { DataTable } from '../../../components/table/DataTable';
+import { EntityCrudPage } from '../../../components/crud/EntityCrudPage';
 import {
-  type AccessPoint,
   type AccessRule,
   createAccessRule,
-  getAccessPoints,
   getAccessRules,
-  getPersons,
-  getSchedules,
-  type Person,
-  type Schedule,
 } from '../api/centralApi';
+import { deleteAccessRule, updateAccessRule } from '../api/crudCentralApi';
+
+interface AccessRuleForm {
+  personId: string;
+  accessPointId: string;
+  scheduleId: string;
+  //priority?: number;
+  active?: boolean;
+}
 
 export function AccessRulesPage() {
-  const [items, setItems] = useState<AccessRule[]>([]);
-  const [persons, setPersons] = useState<Person[]>([]);
-  const [accessPoints, setAccessPoints] = useState<AccessPoint[]>([]);
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [personId, setPersonId] = useState('');
-  const [accessPointId, setAccessPointId] = useState('');
-  const [scheduleId, setScheduleId] = useState('');
-  const [validFrom, setValidFrom] = useState('2025-01-01T00:00');
-  const [validTo, setValidTo] = useState('2030-12-31T23:59');
-
-  async function load() {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const [nextPersons, nextPoints, nextSchedules, nextRules] =
-        await Promise.all([
-          getPersons(),
-          getAccessPoints(),
-          getSchedules(),
-          getAccessRules(),
-        ]);
-
-      setPersons(nextPersons);
-      setAccessPoints(nextPoints);
-      setSchedules(nextSchedules);
-      setItems(nextRules);
-
-      if (!personId && nextPersons.length > 0) {
-        setPersonId(nextPersons[0].id);
-      }
-
-      if (!accessPointId && nextPoints.length > 0) {
-        setAccessPointId(nextPoints[0].id);
-      }
-
-      if (!scheduleId && nextSchedules.length > 0) {
-        setScheduleId(nextSchedules[0].id);
-      }
-    } catch (ex) {
-      setError(ex instanceof Error ? ex.message : 'Ошибка загрузки правил доступа');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleSubmit(event: SubmitEvent) {
-    event.preventDefault();
-
-    try {
-      setError(null);
-
-      await createAccessRule({
-        personId,
-        accessPointId,
-        scheduleId,
-        validFrom: `${validFrom}:00`,
-        validTo: `${validTo}:00`,
-      });
-
-      await load();
-    } catch (ex) {
-      setError(ex instanceof Error ? ex.message : 'Ошибка создания правила доступа');
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, []);
-
   return (
-    <div className="ds-page">
-      <PageHeader
-        title="Правила доступа"
-        description="Связь пользователя, точки прохода и расписания"
-        actions={<Button variant="secondary" onClick={load}>Обновить</Button>}
-      />
-
-      {error && <ErrorMessage message={error} />}
-
-      <Card title="Создать правило доступа">
-        <form className="ds-grid ds-grid-3" onSubmit={handleSubmit}>
-          <Select
-            label="Физическое лицо"
-            value={personId}
-            onChange={(e) => setPersonId(e.target.value)}
-            options={persons.map((item) => ({
-              label: `${item.lastName} ${item.firstName} ${item.middleName || ''}`,
-              value: item.id,
-            }))}
-          />
-
-          <Select
-            label="Точка прохода"
-            value={accessPointId}
-            onChange={(e) => setAccessPointId(e.target.value)}
-            options={accessPoints.map((item) => ({
-              label: item.name,
-              value: item.id,
-            }))}
-          />
-
-          <Select
-            label="Расписание"
-            value={scheduleId}
-            onChange={(e) => setScheduleId(e.target.value)}
-            options={schedules.map((item) => ({
-              label: item.name,
-              value: item.id,
-            }))}
-          />
-
-          <Input
-            label="Действует с"
-            type="datetime-local"
-            value={validFrom}
-            onChange={(e) => setValidFrom(e.target.value)}
-          />
-
-          <Input
-            label="Действует до"
-            type="datetime-local"
-            value={validTo}
-            onChange={(e) => setValidTo(e.target.value)}
-          />
-
-          <div style={{ alignSelf: 'end' }}>
-            <Button type="submit" disabled={!personId || !accessPointId || !scheduleId}>
-              Создать
-            </Button>
-          </div>
-        </form>
-      </Card>
-
-      <Card title="Список правил доступа">
-        {loading ? (
-          <Loading />
-        ) : (
-          <DataTable
-            data={items}
-            getRowKey={(item) => item.id}
-            columns={[
-              { key: 'id', title: 'ID', render: (item) => item.id },
-              { key: 'person', title: 'Person ID', render: (item) => item.personId || '—' },
-              {
-                key: 'point',
-                title: 'AccessPoint ID',
-                render: (item) => item.accessPointId || '—',
-              },
-              {
-                key: 'schedule',
-                title: 'Schedule ID',
-                render: (item) => item.scheduleId || '—',
-              },
-              {
-                key: 'active',
-                title: 'Активно',
-                render: (item) => (
-                  <Badge tone={item.active === false || item.isActive === false ? 'muted' : 'success'}>
-                    {item.active === false || item.isActive === false ? 'no' : 'yes'}
-                  </Badge>
-                ),
-              },
-            ]}
-          />
-        )}
-      </Card>
-    </div>
+    <EntityCrudPage<AccessRule, AccessRuleForm, AccessRuleForm>
+      title="Правила доступа"
+      description="Кто, куда и по какому расписанию может проходить"
+      createTitle="Создать правило"
+      listTitle="Список правил"
+      editTitle="Редактировать правило"
+      deleteTitle="Удалить правило?"
+      loadItems={getAccessRules}
+      createItem={createAccessRule}
+      updateItem={updateAccessRule}
+      deleteItem={deleteAccessRule}
+      initialCreateState={{
+        personId: '',
+        accessPointId: '',
+        scheduleId: '',
+        //priority: 100,
+        active: true,
+      }}
+      createForm={(value, setValue) => (
+        <>
+          <Input label="personId" value={value.personId} onChange={(e) => setValue({ ...value, personId: e.target.value })} />
+          <Input label="accessPointId" value={value.accessPointId} onChange={(e) => setValue({ ...value, accessPointId: e.target.value })} />
+          <Input label="scheduleId" value={value.scheduleId} onChange={(e) => setValue({ ...value, scheduleId: e.target.value })} />
+        </>
+      )}
+      toUpdateState={(item) => ({
+        personId: item.personId || '',
+        accessPointId: item.accessPointId || '',
+        scheduleId: item.scheduleId || '',
+        //priority: item.priority ?? 100,
+        active: item.active ?? true,
+      })}
+      editForm={(value, setValue) => (
+        <>
+          <Input label="personId" value={value.personId} onChange={(e) => setValue({ ...value, personId: e.target.value })} />
+          <Input label="accessPointId" value={value.accessPointId} onChange={(e) => setValue({ ...value, accessPointId: e.target.value })} />
+          <Input label="scheduleId" value={value.scheduleId} onChange={(e) => setValue({ ...value, scheduleId: e.target.value })} />
+        </>
+      )}
+      columns={[
+        { key: 'id', title: 'ID', render: (item) => item.id },
+        { key: 'person', title: 'personId', render: (item) => item.personId || '—' },
+        { key: 'point', title: 'accessPointId', render: (item) => item.accessPointId || '—' },
+        { key: 'schedule', title: 'scheduleId', render: (item) => item.scheduleId || '—' },
+        //{ key: 'priority', title: 'Приоритет', render: (item) => item.priority ?? '—' },
+        {
+          key: 'active',
+          title: 'Активно',
+          render: (item) => (
+            <Badge tone={item.active === false ? 'danger' : 'success'}>
+              {item.active === false ? 'no' : 'yes'}
+            </Badge>
+          ),
+        },
+      ]}
+      getDeleteLabel={(item) => item.id}
+    />
   );
 }
