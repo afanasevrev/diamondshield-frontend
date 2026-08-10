@@ -1,22 +1,21 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
-import { Button } from '../../../components/buttons/Button';
-import { Card } from '../../../components/cards/Card';
-import { ErrorMessage } from '../../../components/feedback/ErrorMessage';
-import { Loading } from '../../../components/feedback/Loading';
 import { Input } from '../../../components/forms/Input';
-import { Select } from '../../../components/forms/Select';
 import { TextArea } from '../../../components/forms/TextArea';
-import { PageHeader } from '../../../components/page/PageHeader';
-import { DataTable } from '../../../components/table/DataTable';
-import {
-  createSchedule,
-  getOrganizations,
-  getSchedules,
-  type Organization,
-  type Schedule,
-} from '../api/centralApi';
+import { EntityCrudPage } from '../../../components/crud/EntityCrudPage';
+import { createSchedule, getSchedules, type Schedule } from '../api/centralApi';
+import { deleteSchedule, updateSchedule } from '../api/crudCentralApi';
 
-function buildSafeTestIntervals() {
+interface ScheduleForm {
+  organizationId: string;
+  name: string;
+  description?: string;
+  intervals: {
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+  }[];
+}
+
+function buildSafeIntervals() {
   return [1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => ({
     dayOfWeek,
     startTime: '09:00:00',
@@ -25,136 +24,87 @@ function buildSafeTestIntervals() {
 }
 
 export function SchedulesPage() {
-  const [items, setItems] = useState<Schedule[]>([]);
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [organizationId, setOrganizationId] = useState('');
-  const [name, setName] = useState('Тестовое ежедневное');
-  const [description, setDescription] = useState(
-    'Тестовое расписание. Используется безопасный интервал 09:00-23:59 из-за временного сдвига времени на backend.',
-  );
-
-  async function load() {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const [orgs, schedules] = await Promise.all([
-        getOrganizations(),
-        getSchedules(),
-      ]);
-
-      setOrganizations(orgs);
-      setItems(schedules);
-
-      if (!organizationId && orgs.length > 0) {
-        setOrganizationId(orgs[0].id);
-      }
-    } catch (ex) {
-      setError(ex instanceof Error ? ex.message : 'Ошибка загрузки расписаний');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleSubmit(event: SubmitEvent) {
-    event.preventDefault();
-
-    try {
-      setError(null);
-
-      await createSchedule({
-        organizationId,
-        name,
-        description,
-        intervals: buildSafeTestIntervals(),
-      });
-
-      await load();
-    } catch (ex) {
-      setError(ex instanceof Error ? ex.message : 'Ошибка создания расписания');
-    }
-  }
-
-  useEffect(() => {
-    load();
-  }, []);
-
   return (
-    <div className="ds-page">
-      <PageHeader
-        title="Расписания"
-        description="Временные интервалы доступа"
-        actions={
-          <Button variant="secondary" onClick={load}>
-            Обновить
-          </Button>
-        }
-      />
-
-      {error && <ErrorMessage message={error} />}
-
-      <Card
-        title="Создать тестовое ежедневное расписание"
-        subtitle="Временное frontend-исправление: 09:00:00 - 23:59:59 вместо 00:00:00 - 23:59:59"
-      >
-        <form className="ds-grid ds-grid-2" onSubmit={handleSubmit}>
-          <Select
-            label="Организация"
-            value={organizationId}
-            onChange={(e) => setOrganizationId(e.target.value)}
-            options={organizations.map((item) => ({
-              label: item.name,
-              value: item.id,
-            }))}
+    <EntityCrudPage<Schedule, ScheduleForm, ScheduleForm>
+      title="Расписания"
+      description="Расписания доступа"
+      createTitle="Создать расписание"
+      listTitle="Список расписаний"
+      editTitle="Редактировать расписание"
+      deleteTitle="Удалить расписание?"
+      loadItems={getSchedules}
+      createItem={createSchedule}
+      updateItem={updateSchedule}
+      deleteItem={deleteSchedule}
+      initialCreateState={{
+        organizationId: '',
+        name: 'Тестовое ежедневное',
+        description: 'Безопасный интервал 09:00-23:59 из-за timezone бага backend',
+        intervals: buildSafeIntervals(),
+      }}
+      createForm={(value, setValue) => (
+        <>
+          <Input
+            label="organizationId"
+            value={value.organizationId || ''}
+            onChange={(e) =>
+              setValue({ ...value, organizationId: e.target.value })
+            }
           />
 
           <Input
             label="Название"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={value.name}
+            onChange={(e) => setValue({ ...value, name: e.target.value })}
           />
 
           <TextArea
             label="Описание"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={value.description || ''}
+            onChange={(e) =>
+              setValue({ ...value, description: e.target.value })
+            }
+          />
+        </>
+      )}
+      toUpdateState={(item) => ({
+        organizationId: item.organizationId || '',
+        name: item.name,
+        description: item.description || '',
+        intervals: item.intervals ?? [],
+      })}
+      editForm={(value, setValue) => (
+        <>
+          <Input
+            label="organizationId"
+            value={value.organizationId || ''}
+            onChange={(e) =>
+              setValue({ ...value, organizationId: e.target.value })
+            }
           />
 
-          <div style={{ alignSelf: 'end' }}>
-            <Button type="submit" disabled={!organizationId}>
-              Создать расписание
-            </Button>
-          </div>
-        </form>
-      </Card>
-
-      <Card title="Список расписаний">
-        {loading ? (
-          <Loading />
-        ) : (
-          <DataTable
-            data={items}
-            getRowKey={(item) => item.id}
-            columns={[
-              { key: 'id', title: 'ID', render: (item) => item.id },
-              { key: 'name', title: 'Название', render: (item) => item.name },
-              {
-                key: 'org',
-                title: 'Организация',
-                render: (item) => item.organizationId || '—',
-              },
-              {
-                key: 'description',
-                title: 'Описание',
-                render: (item) => item.description || '—',
-              },
-            ]}
+          <Input
+            label="Название"
+            value={value.name}
+            onChange={(e) => setValue({ ...value, name: e.target.value })}
           />
-        )}
-      </Card>
-    </div>
+
+          <TextArea
+            label="Описание"
+            value={value.description || ''}
+            onChange={(e) =>
+              setValue({ ...value, description: e.target.value })
+            }
+          />
+        </>
+      )}
+      columns={[
+        { key: 'id', title: 'ID', render: (item) => item.id },
+        { key: 'name', title: 'Название', render: (item) => item.name },
+        { key: 'org', title: 'Организация', render: (item) => item.organizationId || '—' },
+        { key: 'description', title: 'Описание', render: (item) => item.description || '—' },
+      ]}
+      getDeleteLabel={(item) => item.name}
+    />
   );
 }
