@@ -57,6 +57,11 @@ import { LiveGuestDeskPage } from '../features/realtime/pages/LiveGuestDeskPage'
 
 import { NotFoundPage } from '../features/NotFoundPage';
 
+import { SettingsPage } from '../features/admin/settings/SettingsPage';
+import { HealthPage } from '../features/admin/health/HealthPage';
+import { EnvPage } from '../features/admin/env/EnvPage';
+import { DemoChecklistPage } from '../features/admin/demo/DemoChecklistPage';
+
 function protectedPage(element: ReactElement, permissions: string[] = []) {
   return <RequireAuth permissions={permissions}>{element}</RequireAuth>;
 }
@@ -213,7 +218,22 @@ export const router = createBrowserRouter([
         path: '/admin/permissions',
         element: protectedPage(<PermissionsPage />, ['PERMISSION_READ']),
       },
-
+      {
+        path: '/admin/settings',
+        element: protectedPage(<SettingsPage />, ['ADMIN_SETTINGS']),
+      },
+      {
+        path: '/admin/health',
+        element: protectedPage(<HealthPage />, ['ADMIN_SETTINGS']),
+      },
+      {
+        path: '/admin/env',
+        element: protectedPage(<EnvPage />, ['ADMIN_SETTINGS']),
+      },
+      {
+        path: '/admin/demo-checklist',
+        element: protectedPage(<DemoChecklistPage />, ['ADMIN_SETTINGS']),
+      },
       {
         path: '/local/operator',
         element: <LocalOperatorDashboardPage />,

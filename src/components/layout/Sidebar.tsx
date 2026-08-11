@@ -59,6 +59,10 @@ const adminItems: NavItem[] = [
   { label: 'Пользователи', to: '/admin/users', permissions: ['USER_READ'] },
   { label: 'Роли', to: '/admin/roles', permissions: ['ROLE_READ'] },
   { label: 'Permissions', to: '/admin/permissions', permissions: ['PERMISSION_READ'] },
+  { label: 'Настройки', to: '/admin/settings', permissions: ['ADMIN_SETTINGS'] },
+  { label: 'Healthcheck', to: '/admin/health', permissions: ['ADMIN_SETTINGS'] },
+  { label: 'Env config', to: '/admin/env', permissions: ['ADMIN_SETTINGS'] },
+  { label: 'Demo checklist', to: '/admin/demo-checklist', permissions: ['ADMIN_SETTINGS'] },
 ];
 
 export function Sidebar() {
