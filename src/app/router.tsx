@@ -82,7 +82,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/central/organizations',
-        element: protectedPage(<OrganizationsPage />, ['ORGANIZATION_READ']),
+        element: protectedPage(<OrganizationsPage />, ['ORGANIZATION_MANAGE']),
       },
       {
         path: '/central/objects',
