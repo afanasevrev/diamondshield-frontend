@@ -1,24 +1,13 @@
+import { StatusDot } from '../../../components/badges/StatusDot';
 import { Badge } from '../../../components/badges/Badge';
 import { Card } from '../../../components/cards/Card';
 import { PageHeader } from '../../../components/page/PageHeader';
 import { DataTable } from '../../../components/table/DataTable';
 import { formatDateTime } from '../../../shared/utils/formatDate';
-import { type RealtimeAlarmEvent } from '../api/realtimeTypes';
+import { type RealtimeDeviceStatusEvent } from '../api/realtimeTypes';
 import { useRealtimeStream } from '../hooks/useRealtimeStream';
 
-function severityTone(severity?: string) {
-  if (severity === 'critical' || severity === 'high') {
-    return 'danger' as const;
-  }
-
-  if (severity === 'medium' || severity === 'warning') {
-    return 'warning' as const;
-  }
-
-  return 'muted' as const;
-}
-
-export function LiveAlarmsPage() {
+export function LiveDeviceStatusPage() {
   const realtime = useRealtimeStream({
     enabled: true,
     showToasts: true,
@@ -26,14 +15,14 @@ export function LiveAlarmsPage() {
   });
 
   const items = realtime.events
-    .filter((item) => item.type === 'alarm-event')
-    .map((item) => item.payload as RealtimeAlarmEvent);
+    .filter((item) => item.type === 'device-status')
+    .map((item) => item.payload as RealtimeDeviceStatusEvent);
 
   return (
     <div className="ds-page">
       <PageHeader
-        title="Live-тревоги"
-        description="Тревожные события в realtime"
+        title="Live-состояние оборудования"
+        description="Контроллеры, считыватели, PERCo и локальные серверы"
       />
 
       <Card title={`Подключение: ${realtime.connected ? 'online' : 'offline'}`}>
@@ -42,7 +31,7 @@ export function LiveAlarmsPage() {
         </Badge>
       </Card>
 
-      <Card title="Live alarms">
+      <Card title="Live device status">
         <DataTable
           data={items}
           getRowKey={(item) => item.id || crypto.randomUUID()}
@@ -55,26 +44,22 @@ export function LiveAlarmsPage() {
             {
               key: 'type',
               title: 'Тип',
-              render: (item) => item.alarmType || '—',
+              render: (item) => item.deviceType || '—',
             },
             {
-              key: 'severity',
-              title: 'Важность',
-              render: (item) => (
-                <Badge tone={severityTone(item.severity)}>
-                  {item.severity || '—'}
-                </Badge>
-              ),
+              key: 'id',
+              title: 'Device ID',
+              render: (item) => item.deviceId || '—',
+            },
+            {
+              key: 'status',
+              title: 'Статус',
+              render: (item) => <StatusDot status={item.status || 'unknown'} />,
             },
             {
               key: 'message',
               title: 'Сообщение',
               render: (item) => item.message || '—',
-            },
-            {
-              key: 'controller',
-              title: 'Контроллер',
-              render: (item) => item.controllerId || '—',
             },
           ]}
         />

@@ -3,22 +3,10 @@ import { Card } from '../../../components/cards/Card';
 import { PageHeader } from '../../../components/page/PageHeader';
 import { DataTable } from '../../../components/table/DataTable';
 import { formatDateTime } from '../../../shared/utils/formatDate';
-import { type RealtimeAlarmEvent } from '../api/realtimeTypes';
+import { type RealtimeGuestEvent } from '../api/realtimeTypes';
 import { useRealtimeStream } from '../hooks/useRealtimeStream';
 
-function severityTone(severity?: string) {
-  if (severity === 'critical' || severity === 'high') {
-    return 'danger' as const;
-  }
-
-  if (severity === 'medium' || severity === 'warning') {
-    return 'warning' as const;
-  }
-
-  return 'muted' as const;
-}
-
-export function LiveAlarmsPage() {
+export function LiveGuestDeskPage() {
   const realtime = useRealtimeStream({
     enabled: true,
     showToasts: true,
@@ -26,14 +14,14 @@ export function LiveAlarmsPage() {
   });
 
   const items = realtime.events
-    .filter((item) => item.type === 'alarm-event')
-    .map((item) => item.payload as RealtimeAlarmEvent);
+    .filter((item) => item.type === 'guest-event')
+    .map((item) => item.payload as RealtimeGuestEvent);
 
   return (
     <div className="ds-page">
       <PageHeader
-        title="Live-тревоги"
-        description="Тревожные события в realtime"
+        title="Live-гостевой пост"
+        description="Realtime вход/выход гостей"
       />
 
       <Card title={`Подключение: ${realtime.connected ? 'online' : 'offline'}`}>
@@ -42,7 +30,7 @@ export function LiveAlarmsPage() {
         </Badge>
       </Card>
 
-      <Card title="Live alarms">
+      <Card title="Guest realtime events">
         <DataTable
           data={items}
           getRowKey={(item) => item.id || crypto.randomUUID()}
@@ -50,31 +38,27 @@ export function LiveAlarmsPage() {
             {
               key: 'time',
               title: 'Время',
-              render: (item) => formatDateTime(item.createdAt),
+              render: (item) => formatDateTime(item.eventTime),
             },
             {
-              key: 'type',
-              title: 'Тип',
-              render: (item) => item.alarmType || '—',
+              key: 'guest',
+              title: 'Гость',
+              render: (item) => item.guestFullName || item.guestId || '—',
             },
             {
-              key: 'severity',
-              title: 'Важность',
-              render: (item) => (
-                <Badge tone={severityTone(item.severity)}>
-                  {item.severity || '—'}
-                </Badge>
-              ),
+              key: 'action',
+              title: 'Действие',
+              render: (item) => <Badge tone="info">{item.action || '—'}</Badge>,
+            },
+            {
+              key: 'status',
+              title: 'Статус',
+              render: (item) => item.status || '—',
             },
             {
               key: 'message',
               title: 'Сообщение',
               render: (item) => item.message || '—',
-            },
-            {
-              key: 'controller',
-              title: 'Контроллер',
-              render: (item) => item.controllerId || '—',
             },
           ]}
         />
