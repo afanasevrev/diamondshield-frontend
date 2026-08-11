@@ -16,7 +16,7 @@ import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './providers/AuthProvider';
 import { ToastProvider } from './providers/ToastProvider';
 import { router } from './router';
-import './styles/global.css';
+import '../styles/globals.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
