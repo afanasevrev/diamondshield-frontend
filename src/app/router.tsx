@@ -49,6 +49,11 @@ import { LocalDeviceStatusPage } from '../features/local/device-status/LocalDevi
 import { LocalAccessPointsPage } from '../features/local/access-points/LocalAccessPointsPage';
 import { LocalControllersPage } from '../features/local/controllers/LocalControllersPage';
 import { LocalManualControlPage } from '../features/local/manual-control/LocalManualControlPage';
+import { RealtimeDashboardPage } from '../features/realtime/pages/RealtimeDashboardPage';
+import { LiveAccessEventsPage } from '../features/realtime/pages/LiveAccessEventsPage';
+import { LiveAlarmsPage } from '../features/realtime/pages/LiveAlarmsPage';
+import { LiveDeviceStatusPage } from '../features/realtime/pages/LiveDeviceStatusPage';
+import { LiveGuestDeskPage } from '../features/realtime/pages/LiveGuestDeskPage';
 
 import { NotFoundPage } from '../features/NotFoundPage';
 
@@ -176,7 +181,26 @@ export const router = createBrowserRouter([
         path: '/central/audit',
         element: protectedPage(<CentralAuditPage />, ['AUDIT_READ']),
       },
-
+      {
+        path: '/central/realtime',
+        element: protectedPage(<RealtimeDashboardPage />, ['REALTIME_READ']),
+      },
+      {
+        path: '/central/live-access-events',
+        element: protectedPage(<LiveAccessEventsPage />, ['REALTIME_READ']),
+      },
+      {
+        path: '/central/live-alarms',
+        element: protectedPage(<LiveAlarmsPage />, ['REALTIME_READ']),
+      },
+      {
+        path: '/central/live-device-status',
+        element: protectedPage(<LiveDeviceStatusPage />, ['REALTIME_READ']),
+      },
+      {
+        path: '/central/live-guests',
+        element: protectedPage(<LiveGuestDeskPage />, ['REALTIME_READ']),
+      },
       {
         path: '/admin/users',
         element: protectedPage(<UsersPage />, ['USER_READ']),

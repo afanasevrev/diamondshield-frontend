@@ -34,6 +34,11 @@ const centralItems: NavItem[] = [
   { label: 'Центральные тревоги', to: '/central/alarms', permissions: ['ALARM_EVENT_READ'] },
   { label: 'История синхронизации', to: '/central/sync-history', permissions: ['SYNC_HISTORY_READ'] },
   { label: 'Аудит', to: '/central/audit', permissions: ['AUDIT_READ'] },
+  { label: 'Realtime', to: '/central/realtime', permissions: ['REALTIME_READ'] },
+  { label: 'Live проходы', to: '/central/live-access-events', permissions: ['REALTIME_READ'] },
+  { label: 'Live тревоги', to: '/central/live-alarms', permissions: ['REALTIME_READ'] },
+  { label: 'Live оборудование', to: '/central/live-device-status', permissions: ['REALTIME_READ'] },
+  { label: 'Live гости', to: '/central/live-guests', permissions: ['REALTIME_READ'] },
 ];
 
 const localItems: NavItem[] = [
