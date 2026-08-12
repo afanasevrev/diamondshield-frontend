@@ -17,9 +17,11 @@ interface LoginResponse {
 
 export interface CurrentUser {
   id?: string;
+  organizationId?: string | null;
   username: string;
-  displayName?: string | null;
-  roles?: string[];
+  fullName?: string | null;
+  email?: string | null;
+  authorities?: string[];
   permissions?: string[];
 }
 
@@ -108,13 +110,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const profile = await apiClient.get<CurrentUser>('/api/auth/me');
 
-      setCurrentUser(profile);
-      setPermissions(profile.permissions || []);
+      const nextAuthorities = profile.authorities || profile.permissions || [];
 
-      if (profile.username) {
-        setUsername(profile.username);
-        localStorage.setItem(USERNAME_KEY, profile.username);
-      }
+      setCurrentUser(profile);
+      setPermissions(nextAuthorities);
+      
     } finally {
       setLoadingProfile(false);
     }
@@ -125,23 +125,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return true;
     }
 
-    if (permissions.includes('*')) {
+    if (
+      permissions.includes('*') ||
+      permissions.includes('ROLE_SYSTEM_ADMIN')
+    ) {
       return true;
     }
 
     return permissions.includes(permission);
-  }
+  } 
 
   function hasAnyPermission(nextPermissions: string[]) {
     if (nextPermissions.length === 0) {
       return true;
     }
 
-    if (permissions.includes('*')) {
+    if (
+      permissions.includes('*') ||
+      permissions.includes('ROLE_SYSTEM_ADMIN')
+    ) {
       return true;
     }
 
-    return nextPermissions.some((permission) => permissions.includes(permission));
+    return nextPermissions.some((permission) =>
+      permissions.includes(permission),
+    );
   }
 
   useEffect(() => {
