@@ -92,59 +92,59 @@ export const router = createBrowserRouter([
       },
       {
         path: '/central/organizations',
-        element: <OrganizationsPage />,
+        element: protectedPage(<OrganizationsPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/objects',
-        element: protectedPage(<ObjectsPage />, ['OBJECT_READ']),
+        element: protectedPage(<ObjectsPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/local-servers',
-        element: protectedPage(<LocalServersPage />, ['LOCAL_SERVER_READ']),
+        element: protectedPage(<LocalServersPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/offline-diagnostics',
-        element: protectedPage(<OfflineDiagnosticsPage />, ['LOCAL_SERVER_READ']),
+        element: protectedPage(<OfflineDiagnosticsPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/heartbeat-debug',
-        element: protectedPage(<HeartbeatDebugPage />, ['LOCAL_SERVER_DEBUG']),
+        element: protectedPage(<HeartbeatDebugPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/local-sync-config',
-        element: protectedPage(<LocalSyncConfigPage />, ['LOCAL_SYNC_READ']),
+        element: protectedPage(<LocalSyncConfigPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/controllers',
-        element: protectedPage(<ControllersPage />, ['CONTROLLER_READ']),
+        element: protectedPage(<ControllersPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/readers',
-        element: protectedPage(<ReadersPage />, ['READER_READ']),
+        element: protectedPage(<ReadersPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/access-points',
-        element: protectedPage(<AccessPointsPage />, ['ACCESS_POINT_READ']),
+        element: protectedPage(<AccessPointsPage />, ['ORGANIZATION_VIEW']),
       },
       {
         path: '/central/persons',
-        element: protectedPage(<PersonsPage />, ['PERSON_READ']),
+        element: protectedPage(<PersonsPage />, ['PERSON_VIEW']),
       },
       {
         path: '/central/person-card',
-        element: protectedPage(<PersonCardPage />, ['PERSON_READ']),
+        element: protectedPage(<PersonCardPage />, ['PERSON_VIEW']),
       },
       {
         path: '/central/identifiers',
-        element: protectedPage(<IdentifiersPage />, ['IDENTIFIER_READ']),
+        element: protectedPage(<IdentifiersPage />, ['IDENTIFIER_VIEW']),
       },
       {
         path: '/central/card-binding',
-        element: protectedPage(<CardBindingPage />, ['IDENTIFIER_CREATE']),
+        element: protectedPage(<CardBindingPage />, ['IDENTIFIER_MANAGE']),
       },
       {
         path: '/central/imports',
-        element: protectedPage(<PersonsImportPage />, ['IMPORT_PERSONS']),
+        element: protectedPage(<PersonsImportPage />, ['PERSON_IMPORT']),
       },
       {
         path: '/central/guest-requests',
@@ -152,19 +152,19 @@ export const router = createBrowserRouter([
       },
       {
         path: '/central/guests',
-        element: protectedPage(<GuestsRegistryPage />, ['GUEST_READ']),
+        element: protectedPage(<GuestsRegistryPage />, ['GUEST_VIEW']),
       },
       {
         path: '/central/guest-blacklist',
-        element: protectedPage(<GuestBlacklistPage />, ['GUEST_BLACKLIST_READ']),
+        element: protectedPage(<GuestBlacklistPage />, ['GUEST_BLACKLIST_VIEW']),
       },
       {
         path: '/central/schedules',
-        element: protectedPage(<SchedulesPage />, ['SCHEDULE_READ']),
+        element: protectedPage(<SchedulesPage />, ['SCHEDULE_VIEW']),
       },
       {
         path: '/central/access-rules',
-        element: protectedPage(<AccessRulesPage />, ['ACCESS_RULE_READ']),
+        element: protectedPage(<AccessRulesPage />, ['ACCESS_RULE_VIEW']),
       },
       {
         path: '/central/access-check',
@@ -172,51 +172,51 @@ export const router = createBrowserRouter([
       },
       {
         path: '/central/access-events',
-        element: protectedPage(<AccessEventsPage />, ['ACCESS_EVENT_READ']),
+        element: protectedPage(<AccessEventsPage />, ['ACCESS_EVENT_VIEW']),
       },
       {
         path: '/central/alarms',
-        element: protectedPage(<CentralAlarmsPage />, ['ALARM_EVENT_READ']),
+        element: protectedPage(<CentralAlarmsPage />, ['ALARM_EVENT_VIEW']),
       },
       {
         path: '/central/sync-history',
-        element: protectedPage(<SyncHistoryPage />, ['SYNC_HISTORY_READ']),
+        element: protectedPage(<SyncHistoryPage />, ['SYNC_VIEW']),
       },
       {
         path: '/central/audit',
-        element: protectedPage(<CentralAuditPage />, ['AUDIT_READ']),
+        element: protectedPage(<CentralAuditPage />, ['AUDIT_VIEW']),
       },
       {
         path: '/central/realtime',
-        element: protectedPage(<RealtimeDashboardPage />, ['REALTIME_READ']),
+        element: protectedPage(<RealtimeDashboardPage />, ['REALTIME_VIEW']),
       },
       {
         path: '/central/live-access-events',
-        element: protectedPage(<LiveAccessEventsPage />, ['REALTIME_READ']),
+        element: protectedPage(<LiveAccessEventsPage />, ['REALTIME_VIEW']),
       },
       {
         path: '/central/live-alarms',
-        element: protectedPage(<LiveAlarmsPage />, ['REALTIME_READ']),
+        element: protectedPage(<LiveAlarmsPage />, ['REALTIME_VIEW']),
       },
       {
         path: '/central/live-device-status',
-        element: protectedPage(<LiveDeviceStatusPage />, ['REALTIME_READ']),
+        element: protectedPage(<LiveDeviceStatusPage />, ['REALTIME_VIEW']),
       },
       {
         path: '/central/live-guests',
-        element: protectedPage(<LiveGuestDeskPage />, ['REALTIME_READ']),
+        element: protectedPage(<LiveGuestDeskPage />, ['REALTIME_VIEW']),
       },
       {
         path: '/admin/users',
-        element: protectedPage(<UsersPage />, ['USER_READ']),
+        element: protectedPage(<UsersPage />, ['USER_VIEW']),
       },
       {
         path: '/admin/roles',
-        element: protectedPage(<RolesPage />, ['ROLE_READ']),
+        element: protectedPage(<RolesPage />, ['ROLE_VIEW']),
       },
       {
         path: '/admin/permissions',
-        element: protectedPage(<PermissionsPage />, ['PERMISSION_READ']),
+        element: protectedPage(<PermissionsPage />, ['PERMISSION_VIEW']),
       },
       {
         path: '/admin/settings',
@@ -240,7 +240,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/local/guest-desk',
-        element: protectedPage(<LocalGuestDeskPage />, ['GUEST_READ']),
+        element: protectedPage(<LocalGuestDeskPage />, ['GUEST_VIEW']),
       },
       {
         path: '/local/photo-line',
