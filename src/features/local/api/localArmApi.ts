@@ -41,8 +41,9 @@ export interface LocalAccessEvent {
 
   identifierId?: string | null;
   identifierMasked?: string | null;
+  identifierValueHash?: string | null;
 
-  unknownIdentifier?: string | null;
+  unknownIdentifier?: boolean;
   unknownIdentifierHash?: string | null;
   isUnknownIdentifier?: boolean;
 
