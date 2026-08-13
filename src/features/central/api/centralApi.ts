@@ -308,6 +308,7 @@ export interface LocalServer {
   lastSeenAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  serverToken: string;
 }
 
 export interface CreateLocalServerRequest {

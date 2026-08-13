@@ -17,7 +17,7 @@ interface LocalServerForm {
   ipAddress?: string;
   macAddress?: string;
   softwareVersion?: string;
-  serverToken?: string;
+  serverToken: string;
 }
 
 export function LocalServersPage() {
@@ -91,6 +91,7 @@ export function LocalServersPage() {
         ipAddress: item.ipAddress || '',
         macAddress: item.macAddress || '',
         softwareVersion: item.softwareVersion || '',
+        serverToken: item.serverToken || '',
       })}
       editForm={(value, setValue) => (
         <>
