@@ -1,3 +1,5 @@
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../../app/providers/AuthProvider';
 import { useToast } from '../../../app/providers/ToastProvider';
@@ -23,6 +25,7 @@ function getCentralBaseUrl() {
   return import.meta.env.VITE_CENTRAL_API_URL || 'http://localhost:8080';
 }
 
+/** 
 function normalizeType(type: string): RealtimeEventType {
   if (
     type === 'access-event' ||
@@ -38,6 +41,7 @@ function normalizeType(type: string): RealtimeEventType {
 
   return 'unknown';
 }
+*/
 
 export function useRealtimeStream(options: UseRealtimeStreamOptions = {}) {
   const { enabled = true, showToasts = true, maxItems = 100 } = options;
@@ -52,8 +56,9 @@ export function useRealtimeStream(options: UseRealtimeStreamOptions = {}) {
     events: [],
   });
 
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const reconnectTimerRef = useRef<number | null>(null);
+  const clientRef = useRef<Client | null>(null);
+  //const eventSourceRef = useRef<EventSource | null>(null);
+  //const reconnectTimerRef = useRef<number | null>(null);
 
   const streamUrl = useMemo(() => {
     const baseUrl = getCentralBaseUrl();
@@ -119,109 +124,83 @@ export function useRealtimeStream(options: UseRealtimeStreamOptions = {}) {
   }
 
   function connect() {
-    if (!enabled || !auth.token) {
-      return;
-    }
+  if (!enabled || !auth.token) {
+    return;
+  }
 
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
+  clientRef.current?.deactivate();
 
-    setState((prev) => ({
-      ...prev,
-      connecting: true,
-      lastError: null,
-    }));
+  const centralBaseUrl =
+    import.meta.env.VITE_CENTRAL_API_URL ||
+    'http://localhost:8080';
 
-    const source = new EventSource(streamUrl);
+  const client = new Client({
+    webSocketFactory: () =>
+      new SockJS(`${centralBaseUrl}/ws`),
 
-    eventSourceRef.current = source;
+    connectHeaders: {
+      Authorization: `Bearer ${auth.token}`,
+    },
 
-    source.onopen = () => {
+    reconnectDelay: 5000,
+
+    onConnect: () => {
       setState((prev) => ({
         ...prev,
         connected: true,
         connecting: false,
         lastError: null,
       }));
-    };
 
-    source.onerror = () => {
+      client.subscribe('/topic/access-events', (message) => {
+        pushEvent('access-event', JSON.parse(message.body));
+      });
+
+      client.subscribe('/topic/alarm-events', (message) => {
+        pushEvent('alarm-event', JSON.parse(message.body));
+      });
+
+      client.subscribe('/topic/device-status', (message) => {
+        pushEvent('device-status', JSON.parse(message.body));
+      });
+
+      client.subscribe('/topic/card-binding', (message) => {
+        pushEvent('perco-event', JSON.parse(message.body));
+      });
+    },
+
+    onStompError: (frame) => {
       setState((prev) => ({
         ...prev,
         connected: false,
         connecting: false,
-        lastError: 'Realtime stream disconnected',
+        lastError: frame.headers.message || 'STOMP error',
       }));
+    },
 
-      source.close();
+    onWebSocketClose: () => {
+      setState((prev) => ({
+        ...prev,
+        connected: false,
+        connecting: false,
+      }));
+    },
+  });
 
-      if (reconnectTimerRef.current) {
-        window.clearTimeout(reconnectTimerRef.current);
-      }
+  clientRef.current = client;
+  client.activate();
+}
 
-      reconnectTimerRef.current = window.setTimeout(() => {
-        connect();
-      }, 5000);
-    };
+  async function disconnect() {
+  await clientRef.current?.deactivate();
+  clientRef.current = null;
 
-    const eventTypes: RealtimeEventType[] = [
-      'access-event',
-      'alarm-event',
-      'device-status',
-      'local-server-status',
-      'guest-event',
-      'perco-event',
-      'heartbeat',
-    ];
-
-    for (const type of eventTypes) {
-      source.addEventListener(type, (event) => {
-        try {
-          const messageEvent = event as MessageEvent;
-          const payload = JSON.parse(messageEvent.data);
-
-          pushEvent(type, payload);
-        } catch {
-          pushEvent(type, {
-            raw: (event as MessageEvent).data,
-          });
-        }
-      });
-    }
-
-    source.onmessage = (event) => {
-      try {
-        const parsed = JSON.parse(event.data);
-        const type = normalizeType(parsed.type || 'unknown');
-
-        pushEvent(type, parsed.payload || parsed);
-      } catch {
-        pushEvent('unknown', {
-          raw: event.data,
-        });
-      }
-    };
-  }
-
-  function disconnect() {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
-
-    if (reconnectTimerRef.current) {
-      window.clearTimeout(reconnectTimerRef.current);
-      reconnectTimerRef.current = null;
-    }
-
-    setState((prev) => ({
-      ...prev,
-      connected: false,
-      connecting: false,
-    }));
-  }
+  setState((prev) => ({
+    ...prev,
+    connected: false,
+    connecting: false,
+  }));
+}
 
   function clearEvents() {
     setState((prev) => ({
