@@ -25,7 +25,7 @@ function getCentralBaseUrl() {
   return import.meta.env.VITE_CENTRAL_API_URL || 'http://localhost:8080';
 }
 
-/** 
+
 function normalizeType(type: string): RealtimeEventType {
   if (
     type === 'access-event' ||
@@ -41,7 +41,7 @@ function normalizeType(type: string): RealtimeEventType {
 
   return 'unknown';
 }
-*/
+
 
 export function useRealtimeStream(options: UseRealtimeStreamOptions = {}) {
   const { enabled = true, showToasts = true, maxItems = 100 } = options;
