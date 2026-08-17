@@ -1,4 +1,4 @@
-(globalThis as any).global = globalThis;
+globalThis.global = globalThis;
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
