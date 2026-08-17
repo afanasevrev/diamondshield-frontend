@@ -1,4 +1,13 @@
-globalThis.global = globalThis;
+import { Buffer } from 'buffer';
+import process from 'process';
+
+if (typeof global === 'undefined') {
+  window.global = window;
+}
+
+window.Buffer = Buffer;
+window.process = process;
+
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';

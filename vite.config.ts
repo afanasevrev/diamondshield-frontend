@@ -20,4 +20,8 @@ export default defineConfig({
     target: 'es2020',
     chunkSizeWarningLimit: 1200,
   },
+
+  define: {
+    global: 'globalThis',
+  },
 });
