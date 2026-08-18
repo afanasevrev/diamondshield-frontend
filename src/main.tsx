@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Buffer } from 'buffer';
-//import process from 'process/browser';
+//import process from 'process';
 import { App } from './app/App';
 import './styles/globals.css';
 
