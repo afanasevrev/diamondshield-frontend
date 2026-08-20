@@ -1,4 +1,4 @@
-import { type SubmitEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { Badge } from '../../../components/badges/Badge';
 import { HttpError } from '../../../shared/api/httpError';
 import { Button } from '../../../components/buttons/Button';
@@ -52,6 +52,8 @@ export function PersonsImportPage() {
   const [errorsLoading, setErrorsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rawError, setRawError] = useState('');
+  
+  const [organizationId] = useState<string>(' ');
 
   async function loadHistory() {
     try {
@@ -66,11 +68,16 @@ export function PersonsImportPage() {
     }
   }
 
-  async function handleUpload(event: SubmitEvent) {
+  async function handleUpload(event: FormEvent) {
     event.preventDefault();
-
+    
     if (!file) {
       setError('Выбери XLSX-файл');
+      return;
+    }
+
+    if (!organizationId) {
+      setError('Не выбрана организация');
       return;
     }
 
@@ -79,7 +86,7 @@ export function PersonsImportPage() {
       setError(null);
       setResult(null);
 
-      const response = await uploadPersonsXlsx(file);
+      const response = await uploadPersonsXlsx(organizationId, file);
 
       setResult(response);
 

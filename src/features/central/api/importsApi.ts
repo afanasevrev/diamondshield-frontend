@@ -35,6 +35,8 @@ export interface PersonImportResult {
   errorRows?: number;
   createdAt?: string;
   finishedAt?: string;
+  organizationId?: string;
+  importHistoryId?: string;
 }
 
 export interface PersonImportHistoryItem {
@@ -61,13 +63,16 @@ export interface PersonImportError {
 }
 
 export async function uploadPersonsXlsx(
+  organizationId: string,
   file: File,
 ): Promise<PersonImportResult> {
   const formData = new FormData();
   formData.append('file', file);
 
   return apiClient.post<PersonImportResult>(
-    '/api/imports/persons/xlsx',
+    `/api/persons/import/xlsx?organizationId=${encodeURIComponent(
+      organizationId,
+    )}`,
     formData,
   );
 }
